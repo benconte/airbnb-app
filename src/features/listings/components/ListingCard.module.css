@@ -1,0 +1,170 @@
+.card {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid #ece6e4;
+  background: #ffffff;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.cardSaved {
+  border-color: #fd8a7c;
+}
+
+.cardLuxury {
+  box-shadow: 0 10px 24px rgba(192, 132, 252, 0.18);
+}
+
+.cardBooked {
+  opacity: 0.8;
+}
+
+.cardSuperhost {
+  border-color: #f7d776;
+}
+
+.mediaWrap {
+  position: relative;
+}
+
+.media {
+  width: 100%;
+  min-height: 170px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.priceFloating {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  margin: 0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.superhost,
+.luxury {
+  position: absolute;
+  left: 8px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+}
+
+.superhost {
+  top: 36px;
+}
+
+.luxury {
+  top: 62px;
+}
+
+.content {
+  display: grid;
+  gap: 8px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rating {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ff4a26;
+  font-size: 0.85rem;
+}
+
+.category {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #64748b;
+  text-transform: capitalize;
+}
+
+.titleLink {
+  text-decoration: none;
+}
+
+.title {
+  margin: 0;
+  color: #111827;
+}
+
+.availability {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #374151;
+  font-size: 0.86rem;
+}
+
+.directions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  border-radius: 20px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 0 10px;
+  color: #111827;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.saveButton {
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #e11d48;
+  font-size: 1.02rem;
+  cursor: pointer;
+}
+
+@media (max-width: 780px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}
