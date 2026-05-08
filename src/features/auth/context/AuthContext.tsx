@@ -13,7 +13,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       const token = localStorage.getItem('token')
       if (token) {
         try {
-          const userData = await api.get<User>('/auth/me')
+          const userData = await api.get<User>('/api/v1/auth/me')
           setUser(userData)
           setIsAuthenticated(true)
         } catch (error) {
