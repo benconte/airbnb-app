@@ -1,0 +1,116 @@
+.top-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  padding: 12px 18px;
+}
+
+.top-navbar__brand {
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo-text-black {
+  color: #1a1a1a;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.logo-text-red {
+  color: #ff4a26;
+  font-family: "Caveat", "Dancing Script", cursive;
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: 800;
+}
+
+.top-navbar__links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.top-navbar__link {
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.top-navbar__logo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.top-navbar__subtitle {
+  margin: 0;
+  padding: 0;
+  color: #6b7280;
+  font-size: 0.82rem;
+}
+
+.top-navbar__link:hover {
+  color: #ff4a26;
+}
+
+.top-navbar__link--active {
+  color: #ff4a26;
+  border-bottom: 2px solid #ff4a26;
+}
+
+.top-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.top-navbar__icon-btn {
+  background: transparent;
+  border: none;
+  color: #1a1a1a;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.top-navbar__add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ff4a26;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.top-navbar__add-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  font-size: 0.6rem;
+}

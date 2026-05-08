@@ -9,6 +9,6 @@ export interface Listing {
   superhost: boolean
   available: boolean
   availableFrom: string
-  img: string
+  images: string[]
   category: 'beach' | 'mountain' | 'city' | 'countryside'
 }

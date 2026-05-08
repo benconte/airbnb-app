@@ -4,14 +4,19 @@ const seedListings: Omit<Listing, 'id' | 'reviews'>[] = [
   {
     title: 'Ocean Glass Villa',
     location: 'Diani Beach, Kenya',
-    description:
-      'A stunning all-glass villa perched above a pristine white-sand beach, offering unobstructed ocean panoramas and a private infinity pool.',
+    description: `A stunning all-glass villa perched above a pristine white-sand beach, offering unobstructed ocean panoramas and a private infinity pool.
+    Your cozy home away from home in one of Nairobi’s most serene and central suburbs. This stylish 1-bedroom offers comfort and convenience with a pool, gym, fast Wi-Fi, Netflix, washing machine, housekeeping, and free parking. The building includes 24/7 security, elevators, a kids’ play area, and relaxation terraces—ideal for business, couples, or small families.
+Perfect for work or leisure, while providing the ideal setting to unwind, work remotely, or explore Nairobi with ease.`,
     price: 420,
     rating: 4.97,
     superhost: true,
     available: true,
     availableFrom: '2026-06-12',
-    img: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=400&h=260&fit=crop',
+    images: [
+      'https://lobby-benconte.vercel.app/_next/image?url=https%3A%2F%2Fs3-media0.fl.yelpcdn.com%2Fbphoto%2FSTkuNT61iRgrlCExHkyKXg%2Fo.jpg&w=640&q=75',
+      'https://lobby-benconte.vercel.app/_next/image?url=https%3A%2F%2Fs3-media0.fl.yelpcdn.com%2Fbphoto%2FSTkuNT61iRgrlCExHkyKXg%2Fo.jpg&w=640&q=75',
+      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=400&h=260&fit=crop',
+    ],
     category: 'beach',
   },
   {
@@ -24,7 +29,10 @@ const seedListings: Omit<Listing, 'id' | 'reviews'>[] = [
     superhost: false,
     available: true,
     availableFrom: '2026-05-20',
-    img: 'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=400&h=260&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=400&h=260&fit=crop',
+      'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80',
+    ],
     category: 'mountain',
   },
   {
@@ -37,7 +45,10 @@ const seedListings: Omit<Listing, 'id' | 'reviews'>[] = [
     superhost: true,
     available: false,
     availableFrom: '2026-07-04',
-    img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=260&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=260&fit=crop',
+      'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80',
+    ],
     category: 'city',
   },
   {
@@ -50,7 +61,10 @@ const seedListings: Omit<Listing, 'id' | 'reviews'>[] = [
     superhost: false,
     available: true,
     availableFrom: '2026-05-28',
-    img: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=400&h=260&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=400&h=260&fit=crop',
+      'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80',
+    ],
     category: 'countryside',
   },
   {
@@ -63,7 +77,10 @@ const seedListings: Omit<Listing, 'id' | 'reviews'>[] = [
     superhost: true,
     available: true,
     availableFrom: '2026-06-01',
-    img: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=260&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=260&fit=crop',
+      'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80',
+    ],
     category: 'city',
   },
 ]
@@ -79,3 +96,7 @@ export const listings: Listing[] = Array.from({ length: 50 }, (_, index) => {
     available: index % 7 !== 0 ? base.available : !base.available,
   }
 })
+
+export function getListingById(id: number): Listing | undefined {
+  return listings.find((l) => l.id === id)
+}

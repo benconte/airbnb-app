@@ -15,7 +15,6 @@ import useIsMobile from '../hooks/useIsMobile'
 
 const ROW_HEIGHT = 212
 const ROW_GAP = 12
-const FULL_ROW_HEIGHT = ROW_HEIGHT + ROW_GAP
 
 type RowRendererProps = {
   listings: Listing[]

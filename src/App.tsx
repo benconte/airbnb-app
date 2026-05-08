@@ -3,10 +3,13 @@ import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { LoginPage } from './features/auth'
 import { ListingsPage } from './features/listings'
+import { HomePage } from './features/home'
 import { NotFound } from './shared/components/NotFound'
-import { Navbar } from './shared/components/Navbar'
+import { Layout } from './shared/components/Layout'
 import { ProtectedRoute } from './shared/components/ProtectedRoute'
 import { Spinner } from './shared/components/Spinner'
+import { RegisterPage } from './features/auth/pages/RegisterPage'
+import { ForgotPasswordPage } from './features/auth/pages/ForgotPage'
 
 const ListingDetail = lazy(() =>
   import('./features/listings/pages/ListingDetail').then((module) => ({
@@ -30,12 +33,16 @@ export function App() {
 
   return (
     <>
-      <Navbar />
       <Suspense fallback={<Spinner />}>
         <Routes>
-          <Route path="/" element={<ListingsPage />} />
-          <Route path="/listings/:id" element={<ListingDetail />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/listing/:id" element={<ListingDetail />} />
+          </Route>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot" element={<ForgotPasswordPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/dashboard"
             element={

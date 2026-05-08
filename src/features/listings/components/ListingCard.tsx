@@ -28,7 +28,7 @@ function ListingCardComponent({ listing, saved, onToggleSave }: ListingCardProps
       })}
     >
       <div className={styles.mediaWrap}>
-        <img className={styles.media} src={listing.img} alt={listing.title} />
+        <img className={styles.media} src={listing.images[0]} alt={listing.title} />
         <p className={styles.priceFloating}>{numeral(listing.price).format('$0')}</p>
         {listing.superhost && <span className={styles.superhost}>Superhost</span>}
         {listing.price > 300 && <span className={styles.luxury}>Luxury</span>}
@@ -44,7 +44,7 @@ function ListingCardComponent({ listing, saved, onToggleSave }: ListingCardProps
           <p className={styles.category}>{listing.category}</p>
         </div>
 
-        <Link to={`/listings/${listing.id}`} className={styles.titleLink}>
+        <Link to={`/listing/${listing.id}`} className={styles.titleLink}>
           <h3 className={styles.title}>{listing.title}</h3>
         </Link>
 
