@@ -1,6 +1,6 @@
-import { useAuth } from '../hooks/useAuth'
-import { useStore } from '../../../store/useStore'
 import { useNavigate } from 'react-router-dom'
+import { useStore } from '../../store/useStore'
+import { useAuth } from '../auth/hooks/useAuth'
 
 export function DashboardPage() {
   const { user, logout } = useAuth()

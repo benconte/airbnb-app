@@ -1,19 +1,15 @@
-import type { ChangeEvent } from "react"
+import type { ChangeEvent, InputHTMLAttributes } from "react"
 
-interface Props {
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: string
-  type?: string
-  placeholder?: string
-  value: string
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+  // optional error message from validation
+  error?: string
 }
 
 export function AuthInput({
   label,
-  type = 'text',
-  placeholder,
-  value,
-  onChange
+  error,
+  ...inputProps
 }: Props) {
   return (
     <div className="space-y-2">
@@ -22,12 +18,14 @@ export function AuthInput({
       </label>
 
       <input
-        type={type}
-        placeholder={placeholder}
         className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white outline-none focus:border-[#ff4a26] transition-colors"
-        value={value}
-        onChange={onChange}
+        {...inputProps}
       />
+      {error && (
+        <p className="mt-1 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

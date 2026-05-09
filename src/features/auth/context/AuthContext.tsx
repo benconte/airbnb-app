@@ -26,14 +26,28 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [])
 
   const login = async (email: string, password: string) => {
-    const data = await api.post<{ token: string; user: User }>('/api/v1/auth/login', { email, password })
-    localStorage.setItem('token', data.token)
-    setUser(data.user)
-    setIsAuthenticated(true)
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}))
+        throw new Error(errBody.message ?? `HTTP ${res.status}`)
+      }
+      const data = (await res.json()) as { token: string; user: User }
+      localStorage.setItem('token', data.token)
+      setUser(data.user)
+      setIsAuthenticated(true)
+    } catch (error: any) {
+      // Propagate error to caller without triggering global redirect
+      throw error
+    }
   }
 
   const register = async (data: RegisterData) => {
-    await api.post('/auth/register', data)
+    await api.post('/api/v1/auth/register', data)
     await login(data.email, data.password)
   }
 
