@@ -1,6 +1,7 @@
 import { FaStar } from 'react-icons/fa'
 import type { FeaturedListing } from '../types'
 import { Link } from 'react-router-dom'
+import { useFavorites } from '../../listings/hooks/useFavorites'
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1560347876-aeef00ee58a4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
@@ -11,6 +12,8 @@ type Props = {
 }
 
 export function HomeListingCard({ listing, isSeeAll }: Props) {
+  const { toggle, isSaved } = useFavorites()
+
   if (isSeeAll) {
     return (
       <Link to="/listings">
@@ -42,6 +45,7 @@ export function HomeListingCard({ listing, isSeeAll }: Props) {
 
   const imageUrl = listing.photos?.[0]?.url ?? FALLBACK_IMAGE
   const rating = listing.rating
+  const saved = isSaved(listing.id)
 
   return (
     <Link to={`/listing/${listing.id}`}>
@@ -58,8 +62,13 @@ export function HomeListingCard({ listing, isSeeAll }: Props) {
             </div>
           )}
           <button
-            className="absolute top-3 right-3 text-white/80 hover:text-white transition-colors drop-shadow-md z-10 p-1 cursor-pointer"
-            aria-label="Save"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              toggle(listing.id, listing.title)
+            }}
+            className="absolute top-3 right-3 text-white/80 hover:scale-110 transition-transform drop-shadow-md z-10 p-1 cursor-pointer"
+            aria-label={saved ? "Remove from saved listings" : "Save"}
           >
             <svg
               viewBox="0 0 32 32"
@@ -69,10 +78,10 @@ export function HomeListingCard({ listing, isSeeAll }: Props) {
               focusable="false"
               style={{
                 display: 'block',
-                fill: 'rgba(0, 0, 0, 0.5)',
+                fill: saved ? '#ff4a26' : 'rgba(0, 0, 0, 0.5)',
                 height: 24,
                 width: 24,
-                stroke: 'currentColor',
+                stroke: saved ? '#fff' : 'currentColor',
                 strokeWidth: 2,
                 overflow: 'visible',
               }}

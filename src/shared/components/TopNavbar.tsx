@@ -9,7 +9,7 @@ import {
 } from 'react-icons/hi2'
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../features/auth/hooks/useAuth'
-import { SavedBadge } from '../../features/listings/components/SavedBadge'
+import { SavedBadge } from '../../features/guest/listings/components/SavedBadge'
 
 type TopNavbarProps = {
   savedCount: number

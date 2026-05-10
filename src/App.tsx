@@ -6,21 +6,34 @@ import { RegisterPage } from './features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from './features/auth/pages/ForgotPage'
 import { ResetPasswordPage } from './features/auth/pages/ResetPasswordPage'
 import { ProfilePage } from './features/auth/pages/ProfilePage'
-import { ListingsPage } from './features/listings'
-import { HomePage } from './features/home'
+import { ListingsPage } from './features/guest/listings'
+import { HomePage } from './features/guest/home'
 import { NotFound } from './shared/components/NotFound'
 import { Layout } from './shared/components/Layout'
 import { ProtectedRoute } from './shared/components/ProtectedRoute'
 import { Spinner } from './shared/components/Spinner'
+import { HostLayout } from './features/host/components/HostLayout'
+import { AdminLayout } from './features/admin/components/AdminLayout'
+import { Toaster } from './shared/ui/sonner'
 
 const ListingDetail = lazy(() =>
-  import('./features/listings/pages/ListingDetail').then((module) => ({
+  import('./features/guest/listings/pages/ListingDetail').then((module) => ({
     default: module.ListingDetail,
   })),
 )
 const DashboardPage = lazy(() =>
-  import('./features/dashboard/DashboardPage').then((module) => ({
+  import('./features/host/DashboardPage').then((module) => ({
     default: module.DashboardPage,
+  })),
+)
+const WishlistPage = lazy(() =>
+  import('./features/guest/wishlists/pages/WishlistPage').then((module) => ({
+    default: module.WishlistPage,
+  })),
+)
+const BookingsPage = lazy(() =>
+  import('./features/guest/pages/BookingsPage').then((module) => ({
+    default: module.BookingsPage,
   })),
 )
 
@@ -52,6 +65,26 @@ export function App() {
               }
             />
             <Route
+              path="/wishlists"
+              element={
+                <ProtectedRoute>
+                  <WishlistPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/trips"
+              element={
+                <ProtectedRoute>
+                  <BookingsPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          {/* Host Dashboard Routes */}
+          <Route element={<HostLayout />}>
+            <Route
               path="/dashboard"
               element={
                 <ProtectedRoute requiredRole="HOST">
@@ -59,14 +92,17 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+          </Route>
+
+          {/* Admin Dashboard Routes */}
+          <Route element={<AdminLayout />}>
             <Route
               path="/admin"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   {/* Placeholder — Phase 8 */}
-                  <div className="p-12 text-center text-gray-500">
+                  <div className="p-12 text-center text-gray-500 flex-1">
                     <p className="text-2xl font-bold">Admin Portal</p>
-                    <p className="mt-2 text-sm">Coming in Phase 8</p>
                   </div>
                 </ProtectedRoute>
               }
@@ -82,6 +118,7 @@ export function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <Toaster />
     </>
   )
 }

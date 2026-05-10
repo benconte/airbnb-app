@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { api } from '../../../lib/api'
 import {
@@ -39,7 +39,7 @@ export function ProfilePage() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await api.put<User>('/api/v1/users/me', form)
+      await api.put<User>(`/api/v1/users/${user.id}`, form)
       toast.success('Profile updated!')
       setEditing(false)
     } catch (err: any) {
@@ -229,8 +229,8 @@ function ShortcutCard({
   emoji: string
 }) {
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className="flex items-center gap-3 p-4 rounded-2xl border border-gray-100 hover:border-[#ff4a26]/30 hover:bg-orange-50/30 transition-all duration-200 no-underline group cursor-pointer"
     >
       <span className="text-2xl">{emoji}</span>
@@ -238,6 +238,6 @@ function ShortcutCard({
         <p className="text-sm font-semibold text-gray-800 group-hover:text-[#ff4a26] transition-colors">{label}</p>
         <p className="text-xs text-gray-400">{description}</p>
       </div>
-    </a>
+    </Link>
   )
 }

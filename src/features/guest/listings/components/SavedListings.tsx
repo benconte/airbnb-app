@@ -1,7 +1,7 @@
 import { Transition } from '@headlessui/react'
 import numeral from 'numeral'
 import { Fragment } from 'react'
-import { useStore } from '../../../store/useStore'
+import { useStore } from '../../../../store/useStore'
 
 type SavedListingsProps = {
   open: boolean

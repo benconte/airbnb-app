@@ -1,4 +1,4 @@
-import type { Listing } from '../features/listings/types'
+import type { Listing } from '../features/guest/listings/types'
 
 const seedListings: Omit<Listing, 'id' | 'reviews'>[] = [
   {

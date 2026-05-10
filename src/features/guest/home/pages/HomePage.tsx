@@ -2,7 +2,7 @@ import { useHomeListings } from '../hooks/useHomeListings'
 import { SectionCarousel } from '../components/SectionCarousel'
 
 export function HomePage() {
-  const { sections, isLoading, error } = useHomeListings({ sections: 3, perSection: 8 })
+  const { sections, isLoading, error } = useHomeListings({ sections: 10, perSection: 20 })
 
   if (isLoading) {
     return (

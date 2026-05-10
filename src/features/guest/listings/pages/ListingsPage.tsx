@@ -1,8 +1,8 @@
 import { cn } from '@/lib/utils'
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import { List, type RowComponentProps } from 'react-window'
-import { Spinner } from '../../../shared/components/Spinner'
-import { useStore } from '../../../store/useStore'
+import { Spinner } from '../../../../shared/components/Spinner'
+import { useStore } from '../../../../store/useStore'
 import { ListingFiltersSidebar } from '../components/ListingFiltersSidebar'
 import { ListingCard } from '../components/ListingCard'
 import { SavedListings } from '../components/SavedListings'
@@ -185,13 +185,13 @@ export function ListingsPage() {
               >
                 {savedOnly ? 'Show All' : 'Saved Only'}
               </button>
-              <button
+              {/* <button
                 type="button"
                 className="cursor-pointer h-11 rounded-xl border border-[#dbe3f0] bg-white text-slate-700 font-bold px-4 hover:bg-gray-50 transition-colors"
                 onClick={() => setShowSavedPanel((prev) => !prev)}
               >
                 Saved panel
-              </button>
+              </button> */}
               <button
                 type="button"
                 className="cursor-pointer h-11 rounded-xl border border-[#dbe3f0] bg-white text-slate-700 font-bold px-4 hover:bg-gray-50 transition-colors"

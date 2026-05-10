@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { api } from '../../../lib/api'
+import { api } from '../../../../lib/api'
 import type { FeaturedResponse } from '../types'
 
 interface UseHomeListingsOptions {
@@ -7,7 +7,7 @@ interface UseHomeListingsOptions {
   perSection?: number
 }
 
-export function useHomeListings({ sections = 3, perSection = 8 }: UseHomeListingsOptions = {}) {
+export function useHomeListings({ sections = 10, perSection = 20 }: UseHomeListingsOptions = {}) {
   const params = new URLSearchParams({
     sections: String(sections),
     perSection: String(perSection),

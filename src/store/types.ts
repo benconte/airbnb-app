@@ -1,4 +1,4 @@
-import type { Listing } from '../features/listings'
+import type { Listing } from '../features/guest/listings'
 
 export type State = {
   listings: Listing[]

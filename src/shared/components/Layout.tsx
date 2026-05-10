@@ -1,5 +1,5 @@
 import { TopNavbar } from './TopNavbar'
-import { useFavorites } from '../../features/listings/hooks/useFavorites'
+import { useFavorites } from '../../features/guest/listings/hooks/useFavorites'
 import { Outlet } from 'react-router-dom'
 
 export function Layout() {

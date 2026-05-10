@@ -1,9 +1,9 @@
 import debounce from 'lodash/debounce'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
-import { api } from '../../../lib/api'
-import { useStore } from '../../../store/useStore'
+import { api } from '../../../../lib/api'
+import { useStore } from '../../../../store/useStore'
 import type { ListingsResponse } from '../types'
 
 /**
@@ -20,10 +20,19 @@ export function SearchBar() {
     dispatch,
   } = useStore()
 
+  const queryClient = useQueryClient()
+
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState(filter ?? '')
   const [debouncedQuery, setDebouncedQuery] = useState(filter ?? '')
   const [isFocused, setIsFocused] = useState(false)
+
+  useEffect(() => {
+    if (filter === '') {
+      setQuery('')
+      setDebouncedQuery('')
+    }
+  }, [filter])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -50,7 +59,7 @@ export function SearchBar() {
     queryKey: ['listings', 'search', debouncedQuery],
     queryFn: () =>
       api.get<ListingsResponse>(
-        `/api/v1/listings/search?location=${encodeURIComponent(debouncedQuery)}&limit=50`,
+        `/api/v1/listings/search?search=${encodeURIComponent(debouncedQuery)}&limit=50`,
       ),
     enabled: debouncedQuery.trim().length > 0,
     staleTime: 30_000,
@@ -58,10 +67,15 @@ export function SearchBar() {
 
   // Push search results into the global store so the listing grid re-renders
   useEffect(() => {
-    if (data?.data) {
+    if (debouncedQuery.trim() === '') {
+      const defaultListings = queryClient.getQueryData<ListingsResponse>(['listings'])
+      if (defaultListings?.data) {
+        dispatch({ type: 'SET_LISTINGS', payload: defaultListings.data })
+      }
+    } else if (data?.data) {
       dispatch({ type: 'SET_LISTINGS', payload: data.data })
     }
-  }, [data, dispatch])
+  }, [debouncedQuery, data, dispatch, queryClient])
 
   return (
     <label className="grid gap-1.5 w-full">
@@ -84,7 +98,7 @@ export function SearchBar() {
           id="listing-search-input"
           ref={inputRef}
           type="text"
-          placeholder="Search by location..."
+          placeholder="Search by title or location..."
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
