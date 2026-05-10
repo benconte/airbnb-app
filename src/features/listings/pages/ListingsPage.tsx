@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { cn } from '@/lib/utils'
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import { List, type RowComponentProps } from 'react-window'
 import { Spinner } from '../../../shared/components/Spinner'
@@ -10,7 +10,6 @@ import { SearchBar } from '../components/SearchBar'
 import { useFavorites } from '../hooks/useFavorites'
 import { useListings } from '../hooks/useListings'
 import type { Listing } from '../types'
-import '../styles/ListingsPage.css'
 import useIsMobile from '../hooks/useIsMobile'
 
 const ROW_HEIGHT = 212
@@ -26,7 +25,7 @@ function RowRenderer({ index, style, listings, isSaved, onToggleSave }: RowCompo
   const listing = listings[index]
   return (
     <div style={style}>
-      <div className="listings-row">
+      <div className="pb-3">
         <ListingCard
           listing={listing}
           saved={isSaved(listing.id)}
@@ -42,7 +41,7 @@ type SortBy = 'latest' | 'price-low' | 'price-high' | 'rating'
 type AppliedFilters = {
   minPrice: number
   maxPrice: number
-  categories: string[] // changed from Listing['category']
+  categories: string[]
   sortBy: SortBy
 }
 
@@ -151,13 +150,12 @@ export function ListingsPage() {
     [favorites, filteredListings],
   )
 
-  // List height = total virtual height so the page expands naturally
   const listHeight = filteredListings.length * FULL_ROW_HEIGHT
 
   return (
-    <div className="site-shell">
-      <main className="listings-page page-container">
-        <section className="listings-layout">
+    <div className="bg-[#f9f5f4] min-h-svh">
+      <main className="max-w-[1240px] mx-auto text-gray-800 px-5 pt-6 pb-10">
+        <section className="grid grid-cols-[280px_1fr] gap-[18px] max-[960px]:grid-cols-1">
           <ListingFiltersSidebar
             minPrice={minPrice}
             maxPrice={maxPrice}
@@ -171,53 +169,64 @@ export function ListingsPage() {
             onClearFilters={clearFilters}
           />
 
-          <section className="listings-content">
-            <section className="listings-header">
+          <section className="min-w-0">
+            {/* Header row */}
+            <section className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-3 items-end mb-3.5 max-[960px]:grid-cols-1">
               <SearchBar />
               <button
                 type="button"
-                className={clsx('filter-toggle', { 'filter-toggle--active': savedOnly })}
+                className={cn(
+                  'cursor-pointer h-11 rounded-xl border font-bold px-4 transition-colors',
+                  savedOnly
+                    ? 'bg-gray-900 border-gray-900 text-white'
+                    : 'bg-white border-[#dbe3f0] text-slate-700 hover:bg-gray-50',
+                )}
                 onClick={() => setSavedOnly((prev) => !prev)}
               >
                 {savedOnly ? 'Show All' : 'Saved Only'}
               </button>
               <button
                 type="button"
-                className="filter-toggle"
+                className="cursor-pointer h-11 rounded-xl border border-[#dbe3f0] bg-white text-slate-700 font-bold px-4 hover:bg-gray-50 transition-colors"
                 onClick={() => setShowSavedPanel((prev) => !prev)}
               >
                 Saved panel
               </button>
-              <button type="button" className="filter-toggle" onClick={() => dispatch({ type: 'RESET' })}>
+              <button
+                type="button"
+                className="cursor-pointer h-11 rounded-xl border border-[#dbe3f0] bg-white text-slate-700 font-bold px-4 hover:bg-gray-50 transition-colors"
+                onClick={() => dispatch({ type: 'RESET' })}
+              >
                 Clear All
               </button>
             </section>
 
-            <p className="results-count">
+            <p className="m-0 mb-4 text-slate-500 text-[0.9rem]">
               All {filteredListings.length.toLocaleString()} listings found
             </p>
 
             {loading ? (
-              <div className='listings-content-center'>
+              <div className="grid place-items-center h-full">
                 <Spinner />
               </div>
             ) : filteredListings.length === 0 ? (
-              <p className="empty-state">No listings match your current search and filters.</p>
+              <p className="py-10 px-4 rounded-2xl border border-dashed border-slate-300 text-center text-slate-500 bg-white">
+                No listings match your current search and filters.
+              </p>
             ) : isMobile ? (
-              <div className="listings-plain">
+              <div className="flex flex-col gap-3">
                 {filteredListings.map((listing) => (
-                  <div key={listing.id} className="listings-row">
-                    <ListingCard
-                      listing={listing}
-                      saved={favorites.isSaved(listing.id)}
-                      onToggleSave={() => favorites.toggle(listing.id, listing.title)}
-                    />
-                  </div>
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    saved={favorites.isSaved(listing.id)}
+                    onToggleSave={() => favorites.toggle(listing.id, listing.title)}
+                  />
                 ))}
               </div>
             ) : (
               <div ref={listContainerRef} style={{ height: listHeight }}>
-                <div className="listings-list-sticky">
+                <div className="sticky top-[76px] h-screen overflow-hidden pointer-events-auto">
                   <List
                     listRef={listRef}
                     style={{ height: '100vh', overflow: 'hidden' }}

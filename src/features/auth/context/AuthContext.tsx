@@ -25,7 +25,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     initAuth()
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
         method: 'POST',
@@ -40,6 +40,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       localStorage.setItem('token', data.token)
       setUser(data.user)
       setIsAuthenticated(true)
+      return data.user
     } catch (error: any) {
       // Propagate error to caller without triggering global redirect
       throw error

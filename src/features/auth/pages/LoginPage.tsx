@@ -30,12 +30,18 @@ export function LoginPage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
-
   const onSubmit = async (data: LoginForm) => {
     setLoading(true)
     try {
-      await login(data.email, data.password)
-      navigate('/dashboard')
+      const loggedInUser = await login(data.email, data.password)
+      const role = loggedInUser?.role?.toUpperCase()
+      if (role === 'ADMIN') {
+        navigate('/admin')
+      } else if (role === 'HOST') {
+        navigate('/dashboard')
+      } else {
+        navigate('/')
+      }
     } catch (err: any) {
       toast.error(err.message || 'Login failed')
       console.error(err)

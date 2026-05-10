@@ -18,24 +18,26 @@ export function SavedListings({ open }: SavedListingsProps) {
     <Transition
       as={Fragment}
       show={open}
-      enter="saved-panel-enter"
-      enterFrom="saved-panel-enter-from"
-      enterTo="saved-panel-enter-to"
-      leave="saved-panel-leave"
-      leaveFrom="saved-panel-leave-from"
-      leaveTo="saved-panel-leave-to"
+      enter="transition-all duration-200"
+      enterFrom="translate-x-5 opacity-0"
+      enterTo="translate-x-0 opacity-100"
+      leave="transition-all duration-180"
+      leaveFrom="translate-x-0 opacity-100"
+      leaveTo="translate-x-5 opacity-0"
     >
-      <aside className="saved-panel">
-        <h3 className="saved-panel__title">Saved Listings</h3>
+      <aside className="fixed right-4 top-[110px] w-80 max-h-[70vh] overflow-auto rounded-[14px] border border-gray-200 bg-white shadow-[0_18px_44px_rgba(15,23,42,0.2)] p-3.5 z-30">
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Saved Listings</h3>
         {savedListings.length === 0 ? (
-          <p className="saved-panel__empty">No saved listings yet.</p>
+          <p className="text-sm text-gray-400">No saved listings yet.</p>
         ) : (
-          <ul className="saved-panel__list">
+          <ul className="list-none m-0 p-0 flex flex-col gap-2">
             {savedListings.map((listing) => (
-              <li key={listing.id} className="saved-panel__item">
-                <p className="saved-panel__item-title">{listing.title}</p>
-                <p className="saved-panel__item-location">{listing.location}</p>
-                <p className="saved-panel__item-price">{numeral(listing.pricePerNight).format('$0')}</p>
+              <li key={listing.id} className="border border-gray-100 rounded-xl p-3 bg-gray-50">
+                <p className="text-sm font-semibold text-gray-900 m-0">{listing.title}</p>
+                <p className="text-xs text-gray-500 m-0">{listing.location}</p>
+                <p className="text-xs font-bold text-[#ff4a26] m-0">
+                  {numeral(listing.pricePerNight).format('$0')}
+                </p>
               </li>
             ))}
           </ul>

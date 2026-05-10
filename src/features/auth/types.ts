@@ -18,7 +18,7 @@ export type RegisterData = {
 export type AuthContextValue = {
   isAuthenticated: boolean
   user: User | null
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<User>
   register: (data: RegisterData) => Promise<void>
   logout: () => void
 }
