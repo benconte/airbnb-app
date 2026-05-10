@@ -6,21 +6,21 @@ type SortBy = 'latest' | 'price-low' | 'price-high' | 'rating'
 type ListingFiltersSidebarProps = {
   minPrice: number
   maxPrice: number
-  selectedCategories: Listing['category'][]
+  selectedCategories: string[]
   sortBy: SortBy
   onMinPriceChange: (value: number) => void
   onMaxPriceChange: (value: number) => void
-  onToggleCategory: (category: Listing['category']) => void
+  onToggleCategory: (category: string) => void
   onSortByChange: (value: SortBy) => void
   onApplyFilters: () => void
   onClearFilters: () => void
 }
 
-const categoryCount: Record<Listing['category'], number> = {
-  beach: 62,
-  mountain: 31,
-  city: 43,
-  countryside: 21,
+const categoryCount: Record<string, number> = {
+  APARTMENT: 62,
+  HOUSE: 31,
+  VILLA: 43,
+  CABIN: 21,
 }
 
 export function ListingFiltersSidebar({
@@ -35,7 +35,7 @@ export function ListingFiltersSidebar({
   onApplyFilters,
   onClearFilters,
 }: ListingFiltersSidebarProps) {
-  const categories: Listing['category'][] = ['beach', 'mountain', 'city', 'countryside']
+  const categories: string[] = ['APARTMENT', 'HOUSE', 'VILLA', 'CABIN']
 
   return (
     <aside className="listing-sidebar">

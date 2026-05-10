@@ -1,11 +1,11 @@
 import { useRef, useState, useEffect } from 'react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
-import type { HomeListing } from '../data'
+import type { FeaturedListing } from '../types'
 import { HomeListingCard } from './HomeListingCard'
 
 type Props = {
   title: string
-  listings: HomeListing[]
+  listings: FeaturedListing[]
   hasSeeAll?: boolean
   subtitle?: string
 }
@@ -27,16 +27,16 @@ export function SectionCarousel({ title, listings, hasSeeAll, subtitle }: Props)
     checkScroll()
     window.addEventListener('resize', checkScroll)
     return () => window.removeEventListener('resize', checkScroll)
-  }, [])
+  }, [listings])
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = scrollRef.current.clientWidth * 0.8
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
+        behavior: 'smooth',
       })
-      setTimeout(checkScroll, 300) // Re-check after animation
+      setTimeout(checkScroll, 300)
     }
   }
 
@@ -57,16 +57,18 @@ export function SectionCarousel({ title, listings, hasSeeAll, subtitle }: Props)
           <button
             onClick={() => scroll('left')}
             disabled={!canScrollLeft}
-            className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center transition-all cursor-pointer ${!canScrollLeft ? 'opacity-30 cursor-not-allowed' : 'hover:shadow-md hover:scale-105'
-              }`}
+            className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center transition-all cursor-pointer ${
+              !canScrollLeft ? 'opacity-30 cursor-not-allowed' : 'hover:shadow-md hover:scale-105'
+            }`}
           >
             <FaChevronLeft className="w-3 h-3 text-gray-600" />
           </button>
           <button
             onClick={() => scroll('right')}
             disabled={!canScrollRight}
-            className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center transition-all cursor-pointer ${!canScrollRight ? 'opacity-30 cursor-not-allowed' : 'hover:shadow-md hover:scale-105'
-              }`}
+            className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center transition-all cursor-pointer ${
+              !canScrollRight ? 'opacity-30 cursor-not-allowed' : 'hover:shadow-md hover:scale-105'
+            }`}
           >
             <FaChevronRight className="w-3 h-3 text-gray-600" />
           </button>

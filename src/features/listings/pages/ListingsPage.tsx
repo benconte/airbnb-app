@@ -18,8 +18,8 @@ const ROW_GAP = 12
 
 type RowRendererProps = {
   listings: Listing[]
-  isSaved: (id: number) => boolean
-  onToggleSave: (id: number, title: string) => void
+  isSaved: (id: string) => boolean
+  onToggleSave: (id: string, title: string) => void
 }
 
 function RowRenderer({ index, style, listings, isSaved, onToggleSave }: RowComponentProps<RowRendererProps>) {
@@ -42,7 +42,7 @@ type SortBy = 'latest' | 'price-low' | 'price-high' | 'rating'
 type AppliedFilters = {
   minPrice: number
   maxPrice: number
-  categories: Listing['category'][]
+  categories: string[] // changed from Listing['category']
   sortBy: SortBy
 }
 
@@ -58,10 +58,10 @@ export function ListingsPage() {
   const FULL_ROW_HEIGHT = isMobile ? 420 : ROW_HEIGHT + ROW_GAP
   const [savedOnly, setSavedOnly] = useState(false)
   const [showSavedPanel, setShowSavedPanel] = useState(false)
-  const [minPrice, setMinPrice] = useState(500)
-  const [maxPrice, setMaxPrice] = useState(3000)
+  const [minPrice, setMinPrice] = useState(50)
+  const [maxPrice, setMaxPrice] = useState(5000)
   const [sortBy, setSortBy] = useState<SortBy>('latest')
-  const [selectedCategories, setSelectedCategories] = useState<Listing['category'][]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [appliedFilters, setAppliedFilters] = useState<AppliedFilters>({
     minPrice: 50,
     maxPrice: 5000,
@@ -88,19 +88,19 @@ export function ListingsPage() {
 
     const priceAndCategoryFiltered = queryFiltered.filter((listing) => {
       const inPriceRange =
-        listing.price >= appliedFilters.minPrice &&
-        listing.price <= appliedFilters.maxPrice
+        listing.pricePerNight >= appliedFilters.minPrice &&
+        listing.pricePerNight <= appliedFilters.maxPrice
       const inCategory =
         appliedFilters.categories.length === 0 ||
-        appliedFilters.categories.includes(listing.category)
+        appliedFilters.categories.includes(listing.type)
       return inPriceRange && inCategory
     })
 
     const sorted = [...priceAndCategoryFiltered]
 
-    if (appliedFilters.sortBy === 'price-low') sorted.sort((a, b) => a.price - b.price)
-    if (appliedFilters.sortBy === 'price-high') sorted.sort((a, b) => b.price - a.price)
-    if (appliedFilters.sortBy === 'rating') sorted.sort((a, b) => b.rating - a.rating)
+    if (appliedFilters.sortBy === 'price-low') sorted.sort((a, b) => a.pricePerNight - b.pricePerNight)
+    if (appliedFilters.sortBy === 'price-high') sorted.sort((a, b) => b.pricePerNight - a.pricePerNight)
+    if (appliedFilters.sortBy === 'rating') sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0))
 
     return savedOnly ? sorted.filter((listing) => favorites.isSaved(listing.id)) : sorted
   }, [appliedFilters, favorites, filter, listings, savedOnly])
@@ -118,7 +118,7 @@ export function ListingsPage() {
     return () => window.removeEventListener('scroll', handleWindowScroll)
   }, [handleWindowScroll])
 
-  const toggleCategory = (category: Listing['category']) => {
+  const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     )

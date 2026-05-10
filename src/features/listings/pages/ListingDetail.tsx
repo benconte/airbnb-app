@@ -1,15 +1,16 @@
-import { useMemo } from 'react'
-import { getListingById } from '../../../data/listings'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../../../lib/api'
+import type { Listing } from '../types'
 import { PhotoGallery } from '../components/PhotoGallery'
 import { RatingBreakdown } from '../components/RatingBreakdown'
 import { BookingSidebar } from '../components/BookingSidebar'
 import { AmenitiesSection } from '../components/AmenitiesSection'
 import { PricingSection } from '../components/PricingSection'
+import { useMemo } from 'react'
 
-function getIdFromPath(): number {
+function getIdFromPath(): string {
   const parts = window.location.pathname.split('/')
-  const id = parseInt(parts[parts.length - 1], 10)
-  return isNaN(id) ? 1 : id
+  return parts[parts.length - 1]
 }
 
 function StarIcons({ rating }: { rating: number }) {
@@ -26,9 +27,17 @@ function StarIcons({ rating }: { rating: number }) {
 
 export function ListingDetail() {
   const id = useMemo(() => getIdFromPath(), [])
-  const listing = getListingById(id)
 
-  if (!listing) {
+  const { data: listing, isLoading, error } = useQuery<Listing>({
+    queryKey: ['listing', id],
+    queryFn: () => api.get(`/api/v1/listings/${id}`),
+  })
+
+  if (isLoading) {
+    return <div className="p-8 text-center">Loading...</div>
+  }
+
+  if (error || !listing) {
     return (
       <div className="max-w-lg mx-auto mt-24 text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Listing not found</h2>
@@ -38,11 +47,16 @@ export function ListingDetail() {
     )
   }
 
-  const availableDate = new Date(listing.availableFrom).toLocaleDateString('en-US', {
+  const availableDate = new Date().toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   })
+
+  // Map backend fields to UI props
+  const rating = listing.rating ?? 0
+  const isSuperhost = rating >= 4.8
+  const images = listing.photos?.map(p => p.url) || ['https://images.unsplash.com/photo-1560347876-aeef00ee58a4?auto=format&fit=crop&w=800&q=80']
 
   return (
     <div className='bg-white'>
@@ -62,12 +76,12 @@ export function ListingDetail() {
             <h1 className="text-3xl font-extrabold text-gray-900 leading-tight">{listing.title}</h1>
             <div className="flex items-center flex-wrap gap-2 text-[13px]">
               <span className="bg-[#fff4f2] text-[#ff4a26] border border-[#ffd0c5] rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize">
-                {listing.category}
+                {listing.type}
               </span>
               <span className="text-gray-300">/</span>
-              <StarIcons rating={listing.rating} />
+              <StarIcons rating={rating} />
               <span className="text-[#ff4a26] font-semibold">
-                ({listing.rating}) {listing.reviews.toLocaleString()} reviews
+                ({rating}) {listing.reviews?.toLocaleString() || 0} reviews
               </span>
               <span className="text-gray-300">/</span>
               <span className="flex items-center gap-1 text-gray-500">
@@ -78,12 +92,8 @@ export function ListingDetail() {
                 {listing.location}
               </span>
               <span className="text-gray-300">/</span>
-              {listing.available ? (
-                <span className="text-green-600 font-semibold">● Available</span>
-              ) : (
-                <span className="text-amber-600 font-semibold">● From {availableDate}</span>
-              )}
-              {listing.superhost && (
+              <span className="text-green-600 font-semibold">● Available</span>
+              {isSuperhost && (
                 <>
                   <span className="text-gray-300">/</span>
                   <span className="bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2.5 py-0.5 text-xs font-semibold">
@@ -106,11 +116,11 @@ export function ListingDetail() {
         </div>
 
         {/* Gallery */}
-        <PhotoGallery images={listing.images} title={listing.title} />
+        <PhotoGallery images={images} title={listing.title} />
 
         <p className="text-right text-xs text-gray-400 mt-3 mb-8">
           <strong className="text-gray-600">Published:</strong>{' '}
-          {new Date(listing.availableFrom).toLocaleDateString('en-US', {
+          {new Date(listing.createdAt || Date.now()).toLocaleDateString('en-US', {
             month: 'long',
             day: 'numeric',
             year: 'numeric',
@@ -122,7 +132,7 @@ export function ListingDetail() {
           <main className="flex-1 min-w-0 flex flex-col gap-10">
             <section>
               <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
-                About this <span className="text-[#ff4a26] font-[caveat] font-extrabold">hotel</span>
+                About this <span className="text-[#ff4a26] font-[caveat] font-extrabold">{listing.type.toLowerCase()}</span>
               </h2>
               <p className="text-sm text-gray-500 leading-7">{listing.description}</p>
             </section>
@@ -135,15 +145,15 @@ export function ListingDetail() {
               <h2 className="text-2xl font-extrabold text-gray-900 mb-5">
                 Latest <span className="text-[#ff4a26] italic">Reviews</span>
               </h2>
-              <RatingBreakdown rating={listing.rating} reviews={listing.reviews} />
+              <RatingBreakdown rating={rating} reviews={listing.reviews || 0} />
             </section>
           </main>
 
           <div className="sticky top-6 w-[320px] shrink-0">
             <BookingSidebar
-              price={listing.price}
-              available={listing.available}
-              availableFrom={listing.availableFrom}
+              price={listing.pricePerNight}
+              available={true}
+              availableFrom={new Date().toISOString()}
             />
           </div>
         </div>

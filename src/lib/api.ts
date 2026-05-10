@@ -1,5 +1,4 @@
-// src/lib/api.ts — one shared fetch wrapper used by the whole app
-const BASE_URL = import.meta.env.VITE_API_URL  // e.g. https://api.example.com
+const BASE_URL = import.meta.env.VITE_API_URL
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const token = localStorage.getItem('token')

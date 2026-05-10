@@ -1,19 +1,23 @@
 import { useEffect } from 'react'
-import { listings } from '../../../data/listings'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../../../lib/api'
 import { useStore } from '../../../store/useStore'
+import type { ListingsResponse } from '../types'
 
 export function useListings() {
   const { dispatch } = useStore()
 
-  useEffect(() => {
-    dispatch({ type: 'SET_LOADING', payload: true })
-    const timer = window.setTimeout(() => {
-      dispatch({ type: 'SET_LISTINGS', payload: listings })
-      dispatch({ type: 'SET_LOADING', payload: false })
-    }, 1500)
+  const { data, isLoading, error } = useQuery<ListingsResponse>({
+    queryKey: ['listings'],
+    queryFn: () => api.get('/api/v1/listings'),
+  })
 
-    return () => {
-      window.clearTimeout(timer)
+  useEffect(() => {
+    dispatch({ type: 'SET_LOADING', payload: isLoading })
+    if (data?.data) {
+      dispatch({ type: 'SET_LISTINGS', payload: data.data })
     }
-  }, [dispatch])
+  }, [data, isLoading, dispatch])
+
+  return { listings: data?.data || [], isLoading, error }
 }

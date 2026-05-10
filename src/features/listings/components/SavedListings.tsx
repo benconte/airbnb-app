@@ -35,7 +35,7 @@ export function SavedListings({ open }: SavedListingsProps) {
               <li key={listing.id} className="saved-panel__item">
                 <p className="saved-panel__item-title">{listing.title}</p>
                 <p className="saved-panel__item-location">{listing.location}</p>
-                <p className="saved-panel__item-price">{numeral(listing.price).format('$0')}</p>
+                <p className="saved-panel__item-price">{numeral(listing.pricePerNight).format('$0')}</p>
               </li>
             ))}
           </ul>

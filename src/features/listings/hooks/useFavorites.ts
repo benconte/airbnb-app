@@ -7,13 +7,13 @@ export function useFavorites() {
     dispatch,
   } = useStore()
 
-  const toggle = (id: number, title: string) => {
-    const exists = saved.includes(id)
-    dispatch({ type: 'TOGGLE_FAVORITE', payload: id })
+  const toggle = (id: string, title: string) => {
+    const exists = saved.includes(id as any)
+    dispatch({ type: 'TOGGLE_FAVORITE', payload: id as any })
     toast.success(`${exists ? 'Removed' : 'Saved'}: ${title}`)
   }
 
-  const isSaved = (id: number) => saved.includes(id)
+  const isSaved = (id: string) => saved.includes(id as any)
 
   return {
     toggle,

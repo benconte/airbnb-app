@@ -1,14 +1,31 @@
 export interface Listing {
-  id: number
+  id: string
   title: string
   location: string
-  description: string
-  price: number
-  rating: number
+  description?: string
+  pricePerNight: number
+  rating: number | null
   reviews: number
-  superhost: boolean
-  available: boolean
-  availableFrom: string
-  images: string[]
-  category: 'beach' | 'mountain' | 'city' | 'countryside'
+  guests: number
+  type: string
+  amenities?: string[]
+  host?: {
+    name: string
+    avatar?: string | null
+    email?: string
+  }
+  photos?: {
+    url: string
+  }[]
+  createdAt?: string
+}
+
+export interface ListingsResponse {
+  data: Listing[]
+  meta: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
 }

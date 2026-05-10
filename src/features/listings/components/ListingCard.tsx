@@ -16,43 +16,48 @@ type ListingCardProps = {
 }
 
 function ListingCardComponent({ listing, saved, onToggleSave }: ListingCardProps) {
+  // Map backend types safely with fallbacks
+  const price = listing.pricePerNight
+  const rating = listing.rating ?? 0
+  const isLuxury = price > 300
+  const isSuperhost = rating >= 4.8 // Mocking superhost via rating
+  const imageUrl = listing.photos?.[0]?.url || 'https://images.unsplash.com/photo-1560347876-aeef00ee58a4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={clsx(styles.card, {
         [styles.cardSaved]: saved,
-        [styles.cardLuxury]: listing.price > 300,
-        [styles.cardBooked]: !listing.available,
-        [styles.cardSuperhost]: listing.superhost,
+        [styles.cardLuxury]: isLuxury,
+        [styles.cardSuperhost]: isSuperhost,
       })}
     >
       <div className={styles.mediaWrap}>
-        <img className={styles.media} src={listing.images[0]} alt={listing.title} />
-        <p className={styles.priceFloating}>{numeral(listing.price).format('$0')}</p>
-        {listing.superhost && <span className={styles.superhost}>Superhost</span>}
-        {listing.price > 300 && <span className={styles.luxury}>Luxury</span>}
+        <img className={styles.media} src={imageUrl} alt={listing.title} />
+        <p className={styles.priceFloating}>{numeral(price).format('$0')}</p>
+        {isSuperhost && <span className={styles.superhost}>Superhost</span>}
+        {isLuxury && <span className={styles.luxury}>Luxury</span>}
       </div>
 
       <div className={styles.content}>
         <div className={styles.metaRow}>
           <p className={styles.rating}>
             <FaStar />
-            ({numeral(listing.rating).format('0.0')}) {numeral(listing.reviews).format('0,0')}{' '}
+            ({numeral(rating).format('0.0')}) {numeral(listing.reviews || 0).format('0,0')}{' '}
             reviews
           </p>
-          <p className={styles.category}>{listing.category}</p>
+          <p className={styles.category}>{listing.type}</p>
         </div>
 
         <Link to={`/listing/${listing.id}`} className={styles.titleLink}>
           <h3 className={styles.title}>{listing.title}</h3>
         </Link>
 
-        <p className={styles.description}>{listing.description}</p>
+        <p className={styles.description}>{listing.description || 'No description available'}</p>
 
         <p className={styles.availability}>
-          {listing.available ? 'Available' : 'Booked'} from{' '}
-          {format(new Date(listing.availableFrom), 'MMM dd, yyyy')}
+          Available from {format(new Date(), 'MMM dd, yyyy')}
         </p>
 
         <div className={styles.footer}>
