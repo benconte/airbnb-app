@@ -3,14 +3,11 @@ import {
   HiOutlineCalendarDays,
   HiOutlineHome,
   HiOutlineArrowTrendingUp,
-  HiOutlineArrowTrendingDown,
   HiOutlineCheckCircle,
-  HiOutlineClock,
-  HiOutlineXCircle,
 } from 'react-icons/hi2'
 import { useHostAnalytics } from '../hooks/useHostData'
 import { Card, CardContent, CardHeader, CardTitle } from '../../../shared/ui/card'
-import type { MonthlyDataPoint, BookingStatus } from '../types/host'
+import type { MonthlyDataPoint } from '../types/host'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

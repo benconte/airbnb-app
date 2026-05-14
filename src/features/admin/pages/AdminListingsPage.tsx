@@ -14,8 +14,7 @@ import {
   HiMiniArrowTopRightOnSquare,
 } from 'react-icons/hi2'
 import { useAdminListings, useAdminDeleteListing } from '../hooks/useAdminData'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Badge } from '@/shared/ui/badge'
+import { Card, CardContent } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import {
   Dialog,

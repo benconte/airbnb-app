@@ -13,6 +13,7 @@ import {
   HiOutlinePhoto,
   HiXMark,
   HiOutlineCloudArrowUp,
+  HiOutlineClock,
 } from 'react-icons/hi2'
 import { Loader2 } from 'lucide-react'
 import { useCreateListing } from '../hooks/useHostData'
@@ -30,6 +31,15 @@ type PhotoEntry = {
   status: 'pending' | 'uploading' | 'done' | 'error'
   cloudinaryId?: string
   cloudinaryUrl?: string
+}
+
+type PricingTierDraft = {
+  draftId: string
+  name: string
+  description: string
+  tags: string
+  price: string
+  badge: '' | 'NEW' | 'RECOMMENDED' | 'POPULAR' | 'BEST_VALUE'
 }
 
 const LISTING_TYPES: { value: ListingType; label: string; emoji: string; desc: string }[] = [
@@ -50,7 +60,7 @@ const STEPS = [
   { id: 1, title: 'Property Type', subtitle: 'What kind of place is it?', icon: HiOutlineHome },
   { id: 2, title: 'Location & Details', subtitle: 'Where is it and who can stay?', icon: HiOutlineMapPin },
   { id: 3, title: 'Amenities', subtitle: 'What do you offer guests?', icon: HiOutlineSparkles },
-  { id: 4, title: 'Description & Pricing', subtitle: 'Tell guests about your place', icon: HiOutlineCurrencyDollar },
+  { id: 4, title: 'Description & Pricing', subtitle: 'Base price + optional room tiers', icon: HiOutlineCurrencyDollar },
   { id: 5, title: 'Photos', subtitle: 'Show guests your place', icon: HiOutlinePhoto },
   { id: 6, title: 'Review & Publish', subtitle: 'Almost done!', icon: HiOutlineCheckCircle },
 ]
@@ -110,49 +120,24 @@ function StepLocationDetails({
         {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location.message}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="guests" className="text-sm font-semibold text-gray-700 mb-1.5 block">
-            Max Guests <span className="text-[#ff4a26]">*</span>
-          </Label>
-          <Input
-            id="guests"
-            type="number"
-            min={1}
-            max={50}
-            placeholder="4"
-            className="h-11 rounded-xl border-gray-200 focus:border-[#ff4a26] focus:ring-[#ff4a26]/20"
-            {...register('guests', {
-              required: 'Required',
-              min: { value: 1, message: 'Min 1 guest' },
-              valueAsNumber: true,
-            })}
-          />
-          {errors.guests && <p className="text-red-500 text-xs mt-1">{errors.guests.message}</p>}
-        </div>
-
-        <div>
-          <Label htmlFor="pricePerNight" className="text-sm font-semibold text-gray-700 mb-1.5 block">
-            Price / Night (USD) <span className="text-[#ff4a26]">*</span>
-          </Label>
-          <div className="relative">
-            <HiOutlineCurrencyDollar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
-            <Input
-              id="pricePerNight"
-              type="number"
-              min={1}
-              step="0.01"
-              placeholder="120"
-              className="pl-10 h-11 rounded-xl border-gray-200 focus:border-[#ff4a26] focus:ring-[#ff4a26]/20"
-              {...register('pricePerNight', {
-                required: 'Required',
-                min: { value: 1, message: 'Min $1' },
-                valueAsNumber: true,
-              })}
-            />
-          </div>
-          {errors.pricePerNight && <p className="text-red-500 text-xs mt-1">{errors.pricePerNight.message}</p>}
-        </div>
+      <div>
+        <Label htmlFor="guests" className="text-sm font-semibold text-gray-700 mb-1.5 block">
+          Max Guests <span className="text-[#ff4a26]">*</span>
+        </Label>
+        <Input
+          id="guests"
+          type="number"
+          min={1}
+          max={50}
+          placeholder="4"
+          className="h-11 rounded-xl border-gray-200 focus:border-[#ff4a26] focus:ring-[#ff4a26]/20"
+          {...register('guests', {
+            required: 'Required',
+            min: { value: 1, message: 'Min 1 guest' },
+            valueAsNumber: true,
+          })}
+        />
+        {errors.guests && <p className="text-red-500 text-xs mt-1">{errors.guests.message}</p>}
       </div>
     </div>
   )
@@ -196,15 +181,150 @@ function StepAmenities({
   )
 }
 
+const BADGE_OPTIONS = [
+  { value: '', label: 'No badge' },
+  { value: 'NEW', label: '🆕 New' },
+  { value: 'RECOMMENDED', label: '⭐ Recommended' },
+  { value: 'POPULAR', label: '🔥 Popular' },
+  { value: 'BEST_VALUE', label: '💎 Best Value' },
+] as const
+
+const BADGE_COLORS: Record<string, string> = {
+  NEW: 'bg-blue-100 text-blue-700 border-blue-200',
+  RECOMMENDED: 'bg-amber-100 text-amber-700 border-amber-200',
+  POPULAR: 'bg-rose-100 text-rose-700 border-rose-200',
+  BEST_VALUE: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+}
+
+function newTierDraft(): PricingTierDraft {
+  return {
+    draftId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    name: '',
+    description: '',
+    tags: '',
+    price: '',
+    badge: '',
+  }
+}
+
+function PricingTierCard({
+  tier,
+  index,
+  onChange,
+  onRemove,
+}: {
+  tier: PricingTierDraft
+  index: number
+  onChange: (updated: PricingTierDraft) => void
+  onRemove: () => void
+}) {
+  const set = (k: keyof PricingTierDraft, v: string) => onChange({ ...tier, [k]: v })
+  return (
+    <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50/60 relative">
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Room / Tier {index + 1}</p>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+          title="Remove tier"
+        >
+          <HiXMark className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label className="text-xs font-semibold text-gray-600 mb-1 block">Name *</Label>
+          <Input
+            placeholder="e.g. Ocean Suite"
+            value={tier.name}
+            onChange={e => set('name', e.target.value)}
+            className="h-9 rounded-lg text-sm border-gray-200"
+          />
+        </div>
+        <div>
+          <Label className="text-xs font-semibold text-gray-600 mb-1 block">Price / night (USD) *</Label>
+          <div className="relative">
+            <HiOutlineCurrencyDollar className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+            <Input
+              type="number"
+              min={1}
+              step="0.01"
+              placeholder="150"
+              value={tier.price}
+              onChange={e => set('price', e.target.value)}
+              className="h-9 rounded-lg text-sm pl-8 border-gray-200"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <Label className="text-xs font-semibold text-gray-600 mb-1 block">Description</Label>
+        <Input
+          placeholder="e.g. Panoramic sea view, king bed, ensuite bath"
+          value={tier.description}
+          onChange={e => set('description', e.target.value)}
+          className="h-9 rounded-lg text-sm border-gray-200"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label className="text-xs font-semibold text-gray-600 mb-1 block">Tags (comma-separated)</Label>
+          <Input
+            placeholder="Sea View, King Bed, Ensuite"
+            value={tier.tags}
+            onChange={e => set('tags', e.target.value)}
+            className="h-9 rounded-lg text-sm border-gray-200"
+          />
+        </div>
+        <div>
+          <Label className="text-xs font-semibold text-gray-600 mb-1 block">Badge</Label>
+          <select
+            value={tier.badge}
+            onChange={e => set('badge', e.target.value)}
+            className="h-9 w-full rounded-lg border border-gray-200 bg-white text-sm px-2 focus:outline-none focus:ring-1 focus:ring-[#ff4a26]/40"
+          >
+            {BADGE_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {tier.badge && (
+        <div>
+          <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${BADGE_COLORS[tier.badge] ?? ''}`}>
+            {BADGE_OPTIONS.find(o => o.value === tier.badge)?.label}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function StepDescriptionPricing({
   register,
   errors,
+  pricingTiers,
+  onPricingTiersChange,
 }: {
   register: ReturnType<typeof useForm<CreateListingData>>['register']
   errors: Record<string, { message?: string }>
+  pricingTiers: PricingTierDraft[]
+  onPricingTiersChange: (tiers: PricingTierDraft[]) => void
 }) {
+  const updateTier = (draftId: string, updated: PricingTierDraft) =>
+    onPricingTiersChange(pricingTiers.map(t => (t.draftId === draftId ? updated : t)))
+
+  const removeTier = (draftId: string) =>
+    onPricingTiersChange(pricingTiers.filter(t => t.draftId !== draftId))
+
   return (
     <div className="space-y-5">
+      {/* Title */}
       <div>
         <Label htmlFor="title" className="text-sm font-semibold text-gray-700 mb-1.5 block">
           Listing Title <span className="text-[#ff4a26]">*</span>
@@ -221,13 +341,14 @@ function StepDescriptionPricing({
         {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
       </div>
 
+      {/* Description */}
       <div>
         <Label htmlFor="description" className="text-sm font-semibold text-gray-700 mb-1.5 block">
           Description <span className="text-[#ff4a26]">*</span>
         </Label>
         <Textarea
           id="description"
-          rows={5}
+          rows={4}
           placeholder="Describe your property: the space, the neighborhood, and what makes it special..."
           className="rounded-xl border-gray-200 focus:border-[#ff4a26] focus:ring-[#ff4a26]/20 resize-none"
           {...register('description', {
@@ -237,6 +358,70 @@ function StepDescriptionPricing({
         />
         {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
         <p className="text-xs text-gray-400 mt-1">Minimum 30 characters</p>
+      </div>
+
+      {/* Base Price */}
+      <div>
+        <Label htmlFor="pricePerNight" className="text-sm font-semibold text-gray-700 mb-1.5 block">
+          Base Price / Night (USD) <span className="text-[#ff4a26]">*</span>
+        </Label>
+        <div className="relative max-w-xs">
+          <HiOutlineCurrencyDollar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
+          <Input
+            id="pricePerNight"
+            type="number"
+            min={1}
+            step="0.01"
+            placeholder="120"
+            className="pl-10 h-11 rounded-xl border-gray-200 focus:border-[#ff4a26] focus:ring-[#ff4a26]/20"
+            {...register('pricePerNight', {
+              required: 'Required',
+              min: { value: 1, message: 'Min $1' },
+              valueAsNumber: true,
+            })}
+          />
+        </div>
+        {errors.pricePerNight && <p className="text-red-500 text-xs mt-1">{errors.pricePerNight.message}</p>}
+        <p className="text-xs text-gray-400 mt-1">Used as the default rate when no room tiers are defined.</p>
+      </div>
+
+      {/* Pricing Tiers */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="text-sm font-semibold text-gray-700">Room / Pricing Tiers</p>
+            <p className="text-xs text-gray-400">Optional — add different room types with individual prices.</p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-full text-xs border-[#ff4a26] text-[#ff4a26] hover:bg-[#ff4a26]/5 cursor-pointer"
+            onClick={() => onPricingTiersChange([...pricingTiers, newTierDraft()])}
+          >
+            + Add Tier
+          </Button>
+        </div>
+
+        {pricingTiers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+            <HiOutlineCurrencyDollar className="w-8 h-8 text-gray-300 mb-1.5" />
+            <p className="text-xs text-gray-400 font-medium">No pricing tiers yet</p>
+            <p className="text-[11px] text-gray-300 mt-0.5">Click &quot;+ Add Tier&quot; to define room types</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {pricingTiers.map((tier, i) => (
+              <PricingTierCard
+                key={tier.draftId}
+                tier={tier}
+                index={i}
+                onChange={updated => updateTier(tier.draftId, updated)}
+                onRemove={() => removeTier(tier.draftId)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -355,7 +540,16 @@ function StepPhotos({
   )
 }
 
-function StepReview({ data, photosCount }: { data: Partial<CreateListingData>; photosCount: number }) {
+function StepReview({
+  data,
+  photosCount,
+  pricingTiers,
+}: {
+  data: Partial<CreateListingData>
+  photosCount: number
+  pricingTiers: PricingTierDraft[]
+}) {
+  const validTiers = pricingTiers.filter(t => t.name.trim() && t.price)
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
@@ -376,7 +570,7 @@ function StepReview({ data, photosCount }: { data: Partial<CreateListingData>; p
           <p className="font-bold text-gray-900 truncate">{data.location ?? '—'}</p>
         </div>
         <div className="p-4 bg-gray-50 rounded-xl">
-          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Price / night</p>
+          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Base price / night</p>
           <p className="font-bold text-gray-900">${data.pricePerNight ?? '—'}</p>
         </div>
         <div className="p-4 bg-gray-50 rounded-xl">
@@ -388,6 +582,25 @@ function StepReview({ data, photosCount }: { data: Partial<CreateListingData>; p
       <div className="p-4 bg-gray-50 rounded-xl">
         <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Title</p>
         <p className="font-bold text-gray-900 text-sm">{data.title ?? '—'}</p>
+      </div>
+
+      {/* Pricing Tiers Summary */}
+      <div className="p-4 bg-gray-50 rounded-xl">
+        <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">
+          Pricing Tiers ({validTiers.length})
+        </p>
+        {validTiers.length === 0 ? (
+          <p className="text-xs text-gray-400">No tiers — base price only</p>
+        ) : (
+          <div className="space-y-1.5">
+            {validTiers.map((t, i) => (
+              <div key={t.draftId} className="flex items-center justify-between text-xs">
+                <span className="font-medium text-gray-700">{i + 1}. {t.name}</span>
+                <span className="font-bold text-gray-900">${parseFloat(t.price || '0').toFixed(2)}/night</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {data.amenities && data.amenities.length > 0 && (
@@ -405,6 +618,23 @@ function StepReview({ data, photosCount }: { data: Partial<CreateListingData>; p
         <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Photos</p>
         <p className="font-bold text-gray-900 text-sm">{photosCount} photo{photosCount !== 1 ? 's' : ''} added</p>
       </div>
+
+      <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
+        <HiOutlineClock className="text-amber-500 text-xl shrink-0 mt-0.5" />
+
+        <div>
+          <p className="text-sm font-bold text-amber-900">
+            Your listing will be reviewed before going live
+          </p>
+
+          <p className="text-xs leading-relaxed text-amber-800 mt-1">
+            Once submitted, our team will review your listing details, photos, and pricing
+            to ensure everything meets platform standards. You'll receive an email update
+            as soon as your listing is approved or if any changes are required before it
+            can be published.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -415,6 +645,7 @@ export function CreateListingPage() {
   const [selectedType, setSelectedType] = useState<ListingType | ''>('')
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
   const [photoEntries, setPhotoEntries] = useState<PhotoEntry[]>([])
+  const [pricingTiers, setPricingTiers] = useState<PricingTierDraft[]>([])
 
   const { register, handleSubmit, getValues, formState: { errors } } = useForm<CreateListingData>()
   const createMutation = useCreateListing()
@@ -466,6 +697,24 @@ export function CreateListingPage() {
     setPhotoEntries(prev => prev.filter(p => p.localId !== localId))
   }
 
+  const uploadPricingTier = async (tier: PricingTierDraft, listingId: string, token: string | null) => {
+    const tags = tier.tags.split(',').map(t => t.trim()).filter(Boolean)
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/api/v1/listings/${listingId}/pricings`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          name: tier.name.trim(),
+          description: tier.description.trim() || undefined,
+          tags,
+          price: parseFloat(tier.price),
+          badge: tier.badge || undefined,
+        }),
+      },
+    )
+  }
+
   const onSubmit = (formData: CreateListingData) => {
     if (!selectedType) return
     const payload: CreateListingData = {
@@ -475,14 +724,22 @@ export function CreateListingPage() {
     }
     createMutation.mutate(payload, {
       onSuccess: async (createdListing) => {
+        const token = localStorage.getItem('token')
+        const validTiers = pricingTiers.filter(t => t.name.trim() && t.price)
         const pendingPhotos = photoEntries
+        // Upload photos & pricing tiers concurrently
+        const uploads: Promise<unknown>[] = []
         if (pendingPhotos.length > 0) {
           setPhotoEntries(prev =>
             prev.map(p => p.status === 'pending' ? { ...p, status: 'uploading' } : p)
           )
-          await Promise.all(pendingPhotos.map(entry => uploadPhotoNow(entry, createdListing.id)))
+          uploads.push(...pendingPhotos.map(entry => uploadPhotoNow(entry, createdListing.id)))
         }
-        toast.success('Listing created successfully! 🎉')
+        if (validTiers.length > 0) {
+          uploads.push(...validTiers.map(tier => uploadPricingTier(tier, createdListing.id, token)))
+        }
+        await Promise.all(uploads)
+        toast.success('Listing created successfully. You will receive an email once approved! 🎉')
         navigate('/dashboard/my-listings')
       },
       onError: (err) => {
@@ -563,7 +820,12 @@ export function CreateListingPage() {
               <StepAmenities selected={selectedAmenities} onChange={setSelectedAmenities} />
             )}
             {currentStep === 4 && (
-              <StepDescriptionPricing register={register} errors={errors as Record<string, { message?: string }>} />
+              <StepDescriptionPricing
+                register={register}
+                errors={errors as Record<string, { message?: string }>}
+                pricingTiers={pricingTiers}
+                onPricingTiersChange={setPricingTiers}
+              />
             )}
             {currentStep === 5 && (
               <StepPhotos
@@ -580,6 +842,7 @@ export function CreateListingPage() {
                   amenities: selectedAmenities,
                 }}
                 photosCount={photoEntries.length}
+                pricingTiers={pricingTiers}
               />
             )}
           </div>

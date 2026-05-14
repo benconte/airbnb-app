@@ -6,7 +6,6 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader } from '../ui/card'
 import { Badge } from '../ui/badge'
-import { ScrollArea } from '../ui/scroll-area'
 import { Separator } from '../ui/separator'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 

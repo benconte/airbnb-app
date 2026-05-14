@@ -4,6 +4,7 @@ import { api } from '../../../../lib/api'
 import { ListingCard } from '../../listings/components/ListingCard'
 import { useFavorites } from '../../listings/hooks/useFavorites'
 import { motion } from 'framer-motion'
+import type { Listing } from '../../listings'
 
 export function WishlistPage() {
   const { user } = useAuth()
@@ -13,8 +14,8 @@ export function WishlistPage() {
     queryKey: ['wishlists-full', user?.id],
     queryFn: async () => {
       if (!user) return []
-      const res = await api.get(`/api/v1/users/${user.id}/wishlists`)
-      return res.data || res?.data?.data || []
+      const res = await api.get<{ data: Listing[] }>(`/api/v1/users/${user.id}/wishlists`)
+      return res.data || []
     },
     enabled: !!user,
   })

@@ -49,13 +49,6 @@ export function ListingDetail() {
     )
   }
 
-  const availableDate = new Date().toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
-
-  // Map backend fields to UI props
   const rating = listing.rating ?? 0
   const isSuperhost = rating >= 4.8
   const saved = isSaved(id)
@@ -146,17 +139,17 @@ export function ListingDetail() {
 
             <AmenitiesSection />
 
-            <PricingSection />
+            <PricingSection listingId={listing.id} basePricePerNight={listing.pricePerNight} />
 
             <section>
               <h2 className="text-2xl font-extrabold text-gray-900 mb-5">
                 Latest <span className="text-[#ff4a26] italic">Reviews</span>
               </h2>
-              <RatingBreakdown rating={rating} reviews={listing.reviews || 0} />
+              <RatingBreakdown listingId={listing.id} rating={rating} totalReviews={listing.reviews || 0} />
             </section>
           </main>
 
-          <div className="sticky top-26 w-[320px] shrink-0">
+          <div className="sticky top-26 max-w-sm w-full shrink-0">
             <BookingSidebar
               listingId={listing.id}
               price={listing.pricePerNight}

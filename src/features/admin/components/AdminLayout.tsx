@@ -13,6 +13,7 @@ import {
   HiArrowRightOnRectangle,
   HiBars3,
   HiOutlineMagnifyingGlass,
+  HiOutlineDocumentText,
 } from 'react-icons/hi2'
 import { useAuth } from '../../../features/auth/hooks/useAuth'
 
@@ -111,6 +112,10 @@ export function AdminLayout() {
               <NavLink to="/admin/listings" className={navLinkClass}>
                 <HiOutlineBuildingStorefront className="text-xl shrink-0" />
                 {!isCollapsed && <span>Listings</span>}
+              </NavLink>
+              <NavLink to="/admin/listings-review" className={navLinkClass}>
+                <HiOutlineDocumentText className="text-xl shrink-0" />
+                {!isCollapsed && <span>Review Listings</span>}
               </NavLink>
               <NavLink to="/admin/bookings" className={navLinkClass}>
                 <HiOutlineCalendarDays className="text-xl shrink-0" />

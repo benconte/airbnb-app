@@ -46,7 +46,12 @@ const AnalyticsPage = lazy(() =>
 const CreateListingPage = lazy(() =>
   import('./features/host/pages/CreateListingPage').then((module) => ({
     default: module.CreateListingPage,
-  })),
+  }))
+)
+const HostDisputesPage = lazy(() =>
+  import('./features/host/pages/HostDisputesPage').then((module) => ({
+    default: module.HostDisputesPage,
+  }))
 )
 const WishlistPage = lazy(() =>
   import('./features/guest/wishlists/pages/WishlistPage').then((module) => ({
@@ -54,7 +59,7 @@ const WishlistPage = lazy(() =>
   })),
 )
 const BookingsPage = lazy(() =>
-  import('./features/guest/pages/BookingsPage').then((module) => ({
+  import('./features/guest/booking/BookingsPage').then((module) => ({
     default: module.BookingsPage,
   })),
 )
@@ -73,6 +78,11 @@ const AdminUsersPage = lazy(() =>
 const AdminListingsPage = lazy(() =>
   import('./features/admin/pages/AdminListingsPage').then((module) => ({
     default: module.AdminListingsPage,
+  })),
+)
+const AdminReviewListingsPage = lazy(() =>
+  import('./features/admin/pages/AdminListingReviewPage').then((module) => ({
+    default: module.AdminListingReviewPage,
   })),
 )
 const AdminBookingsPage = lazy(() =>
@@ -179,6 +189,14 @@ export function App() {
               }
             />
             <Route
+              path="/dashboard/disputes"
+              element={
+                <ProtectedRoute requiredRole="HOST">
+                  <HostDisputesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/dashboard/profile"
               element={
                 <ProtectedRoute requiredRole="HOST">
@@ -211,6 +229,14 @@ export function App() {
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <AdminListingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/listings-review"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminReviewListingsPage />
                 </ProtectedRoute>
               }
             />

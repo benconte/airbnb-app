@@ -7,6 +7,7 @@ import type {
   PaginatedResponse,
   CreateListingData,
 } from '../types/host'
+import type { ListingPricing } from '../../guest/listings/types'
 
 // ── Analytics ─────────────────────────────────────────────────────────────────
 
@@ -120,6 +121,59 @@ export function useUpdateBookingStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['host', 'bookings'] })
       queryClient.invalidateQueries({ queryKey: ['host', 'analytics'] })
+    },
+  })
+}
+
+// ── Listing Pricing Tiers ─────────────────────────────────────────────────────
+
+export function useListingPricings(listingId: string) {
+  return useQuery<ListingPricing[]>({
+    queryKey: ['listing-pricings', listingId],
+    queryFn: () => api.get<ListingPricing[]>(`/api/v1/listings/${listingId}/pricings`),
+    enabled: !!listingId,
+    staleTime: 1000 * 60,
+  })
+}
+
+export interface CreatePricingData {
+  name: string
+  description?: string
+  tags: string[]
+  price: number
+  badge?: string
+  sortOrder?: number
+}
+
+export function useCreateListingPricing(listingId: string) {
+  const queryClient = useQueryClient()
+  return useMutation<ListingPricing, Error, CreatePricingData>({
+    mutationFn: (data) =>
+      api.post<ListingPricing>(`/api/v1/listings/${listingId}/pricings`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listing-pricings', listingId] })
+    },
+  })
+}
+
+export function useUpdateListingPricing(listingId: string) {
+  const queryClient = useQueryClient()
+  return useMutation<ListingPricing, Error, { pricingId: string; data: Partial<CreatePricingData> }>({
+    mutationFn: ({ pricingId, data }) =>
+      api.patch<ListingPricing>(`/api/v1/listings/${listingId}/pricings/${pricingId}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listing-pricings', listingId] })
+    },
+  })
+}
+
+export function useDeleteListingPricing(listingId: string) {
+  const queryClient = useQueryClient()
+  return useMutation<void, Error, string>({
+    mutationFn: (pricingId) =>
+      api.delete<void>(`/api/v1/listings/${listingId}/pricings/${pricingId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listing-pricings', listingId] })
     },
   })
 }

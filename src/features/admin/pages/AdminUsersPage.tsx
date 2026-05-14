@@ -12,7 +12,6 @@ import {
 } from 'react-icons/hi2'
 import { useAdminUsers, useDeleteUser } from '../hooks/useAdminData'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import {
   Table,
@@ -30,8 +29,6 @@ import {
   DialogFooter,
 } from '@/shared/ui/dialog'
 import type { AdminUser, AdminRole } from '../types/admin'
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const ROLES: AdminRole[] = ['ADMIN', 'HOST', 'GUEST']
 
@@ -52,8 +49,6 @@ function roleBadge(role: AdminRole) {
 function fmtDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
-
-// ── Main Component ────────────────────────────────────────────────────────────
 
 export function AdminUsersPage() {
   const [page, setPage] = useState(1)
@@ -184,7 +179,7 @@ export function AdminUsersPage() {
                               {u.avatar ? (
                                 <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover shrink-0 border border-gray-100" />
                               ) : (
-                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                <div className="w-9 h-9 rounded-full bg-linear-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
                                   {u.name.charAt(0).toUpperCase()}
                                 </div>
                               )}

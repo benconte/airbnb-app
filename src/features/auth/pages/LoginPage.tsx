@@ -9,8 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Spinner } from '../../../shared/components/Spinner'
-import { toast } from 'react-hot-toast'
 import { useAuth } from '../hooks/useAuth'
+import { toast } from 'sonner'
 
 // Validation schema for login
 const loginSchema = z.object({
@@ -35,6 +35,7 @@ export function LoginPage() {
     try {
       const loggedInUser = await login(data.email, data.password)
       const role = loggedInUser?.role?.toUpperCase()
+      toast.success(`Welcome ${loggedInUser.name}, you're now logged in`)
       if (role === 'ADMIN') {
         navigate('/admin')
       } else if (role === 'HOST') {

@@ -22,7 +22,6 @@ import { Button } from '../../../shared/ui/button'
 import { Input } from '../../../shared/ui/input'
 import { Label } from '../../../shared/ui/label'
 import { Textarea } from '../../../shared/ui/textarea'
-import { Badge } from '../../../shared/ui/badge'
 import {
   Table,
   TableBody,
@@ -39,8 +38,7 @@ import {
   DialogDescription,
 } from '../../../shared/ui/dialog'
 import type { HostListing } from '../types/host'
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
+import { PricingManager } from '../components/PricingManager'
 
 function fmtCurrency(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -169,6 +167,11 @@ function EditListingModal({
               )}
             </label>
           </div>
+        </div>
+
+        {/* Pricing Tiers */}
+        <div className="pt-4 border-t border-gray-100">
+          <PricingManager listingId={listing.id} listingTitle={listing.title} />
         </div>
 
         {/* Edit Form */}
@@ -430,7 +433,7 @@ export function MyListingsPage() {
                         size="sm"
                         className="cursor-pointer text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg h-8 w-8 p-0"
                         onClick={() => setEditListingId(listing.id)}
-                        title="Edit"
+                        title="Edit listing & manage pricing"
                       >
                         <HiOutlinePencilSquare className="text-base" />
                       </Button>

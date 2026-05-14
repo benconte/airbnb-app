@@ -32,8 +32,6 @@ import {
 } from '@/shared/ui/dialog'
 import type { AdminDispute, DisputeStatus, DisputeReason } from '../types/admin'
 
-// ── Config ────────────────────────────────────────────────────────────────────
-
 const STATUS_OPTIONS: DisputeStatus[] = ['OPEN', 'UNDER_REVIEW', 'RESOLVED', 'DISMISSED']
 const REASON_OPTIONS: DisputeReason[] = [
   'PROPERTY_CONDITION', 'PAYMENT_ISSUE', 'HOST_BEHAVIOUR',

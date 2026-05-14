@@ -4,10 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import {
   HiOutlineSquares2X2,
   HiOutlinePlusCircle,
-  HiOutlineWallet,
   HiOutlineChatBubbleLeftEllipsis,
   HiOutlineDocumentText,
-  HiOutlineStar,
   HiOutlineCalendarDays,
   HiOutlineBookmarkSquare,
   HiOutlineUser,
@@ -16,6 +14,7 @@ import {
   HiArrowRightOnRectangle,
   HiBars3,
   HiOutlineMagnifyingGlass,
+  HiOutlineExclamationTriangle,
 } from 'react-icons/hi2'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { ChartBarIcon } from 'lucide-react'
@@ -132,13 +131,13 @@ export function HostLayout() {
                 <HiOutlineDocumentText className="text-xl shrink-0" />
                 {!isCollapsed && <span>My Listing</span>}
               </NavLink>
-              <NavLink to="/dashboard/reviews" className={navLinkClass}>
-                <HiOutlineStar className="text-xl shrink-0" />
-                {!isCollapsed && <span>Reviews</span>}
-              </NavLink>
               <NavLink to="/dashboard/bookings" className={navLinkClass}>
                 <HiOutlineCalendarDays className="text-xl shrink-0" />
                 {!isCollapsed && <span>Bookings</span>}
+              </NavLink>
+              <NavLink to="/dashboard/disputes" className={navLinkClass}>
+                <HiOutlineExclamationTriangle className="text-xl shrink-0" />
+                {!isCollapsed && <span>Disputes</span>}
               </NavLink>
               <NavLink to="/dashboard/bookmarks" className={navLinkClass}>
                 <HiOutlineBookmarkSquare className="text-xl shrink-0" />
@@ -256,7 +255,7 @@ export function HostLayout() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-auto p-6 lg:p-8 bg-gradient-to-br from-[#fcfcfc] to-[#fff5f3]/30">
+        <main className="flex-1 overflow-auto p-6 lg:p-8 bg-linear-to-br from-[#fcfcfc] to-[#fff5f3]/30">
           <Outlet />
         </main>
       </div>

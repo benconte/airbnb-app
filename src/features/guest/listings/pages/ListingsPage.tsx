@@ -5,14 +5,9 @@ import { Spinner } from '../../../../shared/components/Spinner'
 import { useStore } from '../../../../store/useStore'
 import { ListingFiltersSidebar } from '../components/ListingFiltersSidebar'
 import { ListingCard } from '../components/ListingCard'
-import { SavedListings } from '../components/SavedListings'
 import { SearchBar } from '../components/SearchBar'
 import { useFavorites } from '../hooks/useFavorites'
 import { useListings } from '../hooks/useListings'
-import type { Listing } from '../types'
-import useIsMobile from '../hooks/useIsMobile'
-
-
 
 type SortBy = 'latest' | 'price-low' | 'price-high' | 'rating'
 
@@ -32,10 +27,8 @@ export function ListingsPage() {
   } = useStore()
   const [searchParams, setSearchParams] = useSearchParams()
   const favorites = useFavorites()
-  const isMobile = useIsMobile()
 
   const [savedOnly, setSavedOnly] = useState(false)
-  const [showSavedPanel, setShowSavedPanel] = useState(false)
   const [minPrice, setMinPrice] = useState(50)
   const [maxPrice, setMaxPrice] = useState(5000)
   const [sortBy, setSortBy] = useState<SortBy>('latest')
@@ -237,8 +230,6 @@ export function ListingsPage() {
           </section>
         </section>
       </main>
-
-      <SavedListings open={showSavedPanel} />
     </div>
   )
 }

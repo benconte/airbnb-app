@@ -5,13 +5,14 @@ import {
   HiOutlineClock,
   HiOutlineXCircle,
   HiOutlineCalendarDays,
-  HiOutlineUser,
   HiChevronLeft,
   HiChevronRight,
   HiOutlineFunnel,
+  HiOutlineExclamationTriangle,
 } from 'react-icons/hi2'
 import { useHostBookings, useUpdateBookingStatus } from '../hooks/useHostData'
 import { Button } from '../../../shared/ui/button'
+import { DisputeFormDialog } from '../../bookings/components/DisputeFormDialog'
 import {
   Table,
   TableBody,
@@ -62,6 +63,7 @@ function StatusBadge({ status }: { status: BookingStatus }) {
 
 function BookingActions({ booking }: { booking: HostBooking }) {
   const updateStatus = useUpdateBookingStatus()
+  const [disputeOpen, setDisputeOpen] = useState(false)
 
   const handleStatusChange = (newStatus: string) => {
     updateStatus.mutate(
@@ -78,29 +80,49 @@ function BookingActions({ booking }: { booking: HostBooking }) {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      {booking.status === 'PENDING' && (
-        <Button
-          size="sm"
-          className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-3"
-          onClick={() => handleStatusChange('CONFIRMED')}
-          disabled={updateStatus.isPending}
-        >
-          Confirm
-        </Button>
-      )}
-      {(booking.status === 'PENDING' || booking.status === 'CONFIRMED') && (
-        <Button
-          size="sm"
-          variant="outline"
-          className="rounded-full border-red-200 text-red-600 hover:bg-red-50 text-xs h-7 px-3"
-          onClick={() => handleStatusChange('CANCELLED')}
-          disabled={updateStatus.isPending}
-        >
-          Cancel
-        </Button>
-      )}
-    </div>
+    <>
+      <div className="flex items-center gap-2">
+        {booking.status === 'PENDING' && (
+          <Button
+            size="sm"
+            className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-3"
+            onClick={() => handleStatusChange('CONFIRMED')}
+            disabled={updateStatus.isPending}
+          >
+            Confirm
+          </Button>
+        )}
+        {(booking.status === 'PENDING' || booking.status === 'CONFIRMED') && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-full border-red-200 text-red-600 hover:bg-red-50 text-xs h-7 px-3"
+            onClick={() => handleStatusChange('CANCELLED')}
+            disabled={updateStatus.isPending}
+          >
+            Cancel
+          </Button>
+        )}
+        {booking.status === 'CONFIRMED' && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-full border-amber-200 text-amber-700 hover:bg-amber-50 text-xs h-7 px-3"
+            onClick={() => setDisputeOpen(true)}
+          >
+            <HiOutlineExclamationTriangle className="mr-1 text-xs" />
+            Dispute
+          </Button>
+        )}
+      </div>
+
+      <DisputeFormDialog
+        open={disputeOpen}
+        onOpenChange={setDisputeOpen}
+        bookingId={booking.id}
+        role="HOST"
+      />
+    </>
   )
 }
 
@@ -162,11 +184,10 @@ export function HostBookingsPage() {
             <button
               key={pill.value}
               onClick={() => { setStatusFilter(pill.value); setPage(1) }}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all border ${
-                isActive
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all border ${isActive
                   ? `${pill.color} border-transparent shadow-sm`
                   : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
-              }`}
+                }`}
             >
               <Icon className="text-base" /> {pill.label}
             </button>

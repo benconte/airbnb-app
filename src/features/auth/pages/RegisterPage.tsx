@@ -8,7 +8,6 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import toast from 'react-hot-toast'
 import { Loader2 } from 'lucide-react'
 
 // Validation schema for registration
@@ -28,6 +27,7 @@ const registerSchema = z.object({
 type RegisterForm = z.infer<typeof registerSchema>
 
 import { useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 export function RegisterPage() {
   const [searchParams] = useSearchParams()
@@ -38,7 +38,7 @@ export function RegisterPage() {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterForm>({ 
+  } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: { role: initialRole }
   })
@@ -58,8 +58,8 @@ export function RegisterPage() {
       toast.success('Registration successful')
       navigate('/')
     } catch (err: any) {
-      // Show generic error toast if needed (could integrate toast library)
-      console.error(err)
+      console.error(err.message)
+      toast.error(err?.message || "Email or username taken! Try again")
     }
   }
 

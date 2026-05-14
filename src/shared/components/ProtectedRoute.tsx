@@ -1,7 +1,7 @@
-import toast from 'react-hot-toast'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import { useEffect, type PropsWithChildren } from 'react'
+import { toast } from 'sonner'
 
 type ProtectedRouteProps = PropsWithChildren<{
   /** If provided, only users with this role (case-insensitive) can access the route */

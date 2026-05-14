@@ -8,8 +8,6 @@ interface Props {
 export function PhotoGallery({ images, title }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
-  console.log(images)
-
   const defaultImages = [
     'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
     'https://lobby-benconte.vercel.app/_next/image?url=https%3A%2F%2Fs3-media0.fl.yelpcdn.com%2Fbphoto%2FSTkuNT61iRgrlCExHkyKXg%2Fo.jpg&w=640&q=75',

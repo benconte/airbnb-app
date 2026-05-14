@@ -7,7 +7,7 @@ import { useStore } from '../../../../store/useStore'
 export function SearchBar() {
   const [searchParams, setSearchParams] = useSearchParams()
   const initialSearch = searchParams.get('search') || ''
-  const { state: { loading, listings } } = useStore() // Get loading state just for UI spinner
+  const { state: { loading } } = useStore() // Get loading state just for UI spinner
 
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState(initialSearch)

@@ -15,8 +15,6 @@ import {
   HiOutlineTicket,
   HiOutlineHeart,
   HiOutlineShieldExclamation,
-  HiOutlineSquares2X2,
-  HiOutlinePlusCircle,
   HiOutlineChartBar,
   HiOutlineCalendarDays,
   HiOutlineUsers,
@@ -28,27 +26,27 @@ import {
 } from 'react-icons/hi2'
 import type { User } from '../types'
 
-const ROLE_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; gradient: string }> = {
+const ROLE_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; linear: string }> = {
   ADMIN: {
     label: 'Administrator',
     color: 'text-purple-700',
     bg: 'bg-purple-50',
     border: 'border-purple-200',
-    gradient: 'from-purple-600 via-purple-500 to-indigo-600',
+    linear: 'from-purple-600 via-purple-500 to-indigo-600',
   },
   HOST: {
     label: 'Host',
     color: 'text-blue-700',
     bg: 'bg-blue-50',
     border: 'border-blue-200',
-    gradient: 'from-blue-600 via-blue-500 to-cyan-500',
+    linear: 'from-blue-600 via-blue-500 to-cyan-500',
   },
   GUEST: {
     label: 'Guest',
     color: 'text-[#ff4a26]',
     bg: 'bg-orange-50',
     border: 'border-orange-200',
-    gradient: 'from-[#ff4a26] via-[#ff6b4a] to-[#ff8c6a]',
+    linear: 'from-[#ff4a26] via-[#ff6b4a] to-[#ff8c6a]',
   },
 }
 
@@ -166,7 +164,7 @@ function ProfileCard({
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 mb-6">
       <div className="flex items-end gap-5 mb-6">
-        <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${roleInfo.gradient} flex items-center justify-center text-3xl font-black text-white shadow-lg border-4 border-white shrink-0`}>
+        <div className={`w-24 h-24 rounded-2xl bg-linear-to-br ${roleInfo.linear} flex items-center justify-center text-3xl font-black text-white shadow-lg border-4 border-white shrink-0`}>
           {initials}
         </div>
         <div className="flex-1 pb-1">
@@ -233,8 +231,8 @@ function ProfileCard({
 
 function GuestProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit, onSave, onFormChange, onLogout }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-orange-50/30 pb-20">
-      <div className="h-40 bg-gradient-to-r from-[#ff4a26] via-[#ff6b4a] to-[#ff8c6a] relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-orange-50/30 pb-20">
+      <div className="h-40 bg-linear-to-r from-[#ff4a26] via-[#ff6b4a] to-[#ff8c6a] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=60 height=60 viewBox=0 0 60 60 xmlns=http://www.w3.org/2000/svg%3E%3Cg fill=none fill-rule=evenodd%3E%3Cg fill=%23ffffff fill-opacity=0.4%3E%3Cpath d=M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" />
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-white/70 text-sm font-medium">
           <HiOutlineGlobeAlt className="text-base" />
@@ -260,7 +258,7 @@ function GuestProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit,
         </div>
 
         {/* Guest tips */}
-        <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl border border-orange-100 p-6 mb-6">
+        <div className="bg-linear-to-br from-orange-50 to-red-50 rounded-3xl border border-orange-100 p-6 mb-6">
           <h2 className="text-sm font-semibold text-[#ff4a26] uppercase tracking-wide mb-3">Guest Tips</h2>
           <ul className="space-y-2.5">
             {[
@@ -298,8 +296,8 @@ function GuestProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit,
 
 function HostProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit, onSave, onFormChange, onLogout }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 pb-20">
-      <div className="h-40 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30 pb-20">
+      <div className="h-40 bg-linear-to-r from-blue-600 via-blue-500 to-cyan-500 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=60 height=60 viewBox=0 0 60 60 xmlns=http://www.w3.org/2000/svg%3E%3Cg fill=none fill-rule=evenodd%3E%3Cg fill=%23ffffff fill-opacity=0.4%3E%3Cpath d=M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" />
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-white/70 text-sm font-medium">
           <HiOutlineHome className="text-base" />
@@ -341,7 +339,7 @@ function HostProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit, 
         </div>
 
         {/* Host Tips */}
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl border border-blue-100 p-6 mb-6">
+        <div className="bg-linear-to-br from-blue-50 to-cyan-50 rounded-3xl border border-blue-100 p-6 mb-6">
           <h2 className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3">Host Tips</h2>
           <ul className="space-y-2.5">
             {[
@@ -379,8 +377,8 @@ function HostProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit, 
 
 function AdminProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit, onSave, onFormChange, onLogout }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50/30 pb-20">
-      <div className="h-40 bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-purple-50/30 pb-20">
+      <div className="h-40 bg-linear-to-r from-purple-700 via-purple-600 to-indigo-600 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=60 height=60 viewBox=0 0 60 60 xmlns=http://www.w3.org/2000/svg%3E%3Cg fill=none fill-rule=evenodd%3E%3Cg fill=%23ffffff fill-opacity=0.4%3E%3Cpath d=M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" />
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-white/70 text-sm font-medium">
           <HiOutlineShieldCheck className="text-base" />
@@ -422,7 +420,7 @@ function AdminProfilePage({ user, form, editing, saving, roleInfo, onToggleEdit,
         </div>
 
         {/* Admin capabilities */}
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-3xl border border-purple-100 p-6 mb-6">
+        <div className="bg-linear-to-br from-purple-50 to-indigo-50 rounded-3xl border border-purple-100 p-6 mb-6">
           <h2 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-3">Admin Capabilities</h2>
           <ul className="space-y-2.5">
             {[

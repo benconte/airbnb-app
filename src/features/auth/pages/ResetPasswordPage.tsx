@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { api } from '../../../lib/api'
-import { toast } from 'react-hot-toast'
+import { toast } from 'sonner'
 
 // Zod schema for password reset
 const resetSchema = z.object({
