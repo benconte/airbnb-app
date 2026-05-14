@@ -1,6 +1,7 @@
 import { TopNavbar } from './TopNavbar'
 import { useFavorites } from '../../features/guest/listings/hooks/useFavorites'
 import { Outlet } from 'react-router-dom'
+import { AiChatWidget } from './AiChatWidget'
 
 export function Layout() {
   const favorites = useFavorites()
@@ -13,6 +14,7 @@ export function Layout() {
       <main className="flex-1 pt-28">
         <Outlet />
       </main>
+      <AiChatWidget />
     </div>
   )
 }

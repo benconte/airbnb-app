@@ -30,7 +30,7 @@ createRoot(document.getElementById('root')!).render(
           </AuthProvider>
         </StoreProvider>
       </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-left' />
     </QueryClientProvider>
   </StrictMode>,
 )

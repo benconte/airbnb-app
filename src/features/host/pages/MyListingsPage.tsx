@@ -428,7 +428,7 @@ export function MyListingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg h-8 w-8 p-0"
+                        className="cursor-pointer text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg h-8 w-8 p-0"
                         onClick={() => setEditListingId(listing.id)}
                         title="Edit"
                       >
@@ -437,7 +437,7 @@ export function MyListingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg h-8 w-8 p-0"
+                        className="cursor-pointer text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg h-8 w-8 p-0"
                         onClick={() => setDeleteListing(listing)}
                         title="Delete"
                       >

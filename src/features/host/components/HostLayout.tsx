@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
+import { AiChatWidget } from '../../../shared/components/AiChatWidget'
 import { useState, useRef, useEffect } from 'react'
 import {
   HiOutlineSquares2X2,
@@ -81,14 +82,14 @@ export function HostLayout() {
             <div className="flex flex-col gap-0.5 items-center md:items-start">
               <div className="flex items-baseline leading-none">
                 <span className={`font-extrabold text-gray-900 tracking-tight transition-all ${isCollapsed ? 'text-sm' : 'text-[1.55rem]'}`}>
-                  {isCollapsed ? 'A' : 'Airbnb'}
+                  {isCollapsed ? 'S' : 'Stay'}
                 </span>
                 {!isCollapsed && (
                   <span
                     className="text-[2rem] font-extrabold italic text-[#ff4a26] leading-none"
                     style={{ fontFamily: "'Caveat', 'Dancing Script', cursive" }}
                   >
-                    Clone
+                    Hub
                   </span>
                 )}
               </div>
@@ -150,15 +151,15 @@ export function HostLayout() {
           <div>
             {!isCollapsed && <h3 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Account</h3>}
             <div className="space-y-1">
-              <NavLink to="/profile" className={navLinkClass}>
+              <NavLink to="/dashboard/profile" className={navLinkClass}>
                 <HiOutlineUser className="text-xl shrink-0" />
                 {!isCollapsed && <span>Edit Profile</span>}
               </NavLink>
-              <NavLink to="/settings" className={navLinkClass}>
+              <NavLink to="/dashboard/settings" className={navLinkClass}>
                 <HiOutlineCog6Tooth className="text-xl shrink-0" />
                 {!isCollapsed && <span>Setting</span>}
               </NavLink>
-              <NavLink to="/support" className={navLinkClass}>
+              <NavLink to="/dashboard/support" className={navLinkClass}>
                 <HiOutlineQuestionMarkCircle className="text-xl shrink-0" />
                 {!isCollapsed && <span>Support</span>}
               </NavLink>
@@ -259,6 +260,7 @@ export function HostLayout() {
           <Outlet />
         </main>
       </div>
+      <AiChatWidget />
     </div>
   )
 }

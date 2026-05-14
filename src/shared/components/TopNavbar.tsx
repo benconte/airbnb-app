@@ -61,12 +61,12 @@ export function TopNavbar({ savedCount }: TopNavbarProps) {
       <Link to="/" className="flex items-center no-underline shrink-0">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-baseline leading-none">
-            <span className="text-[1.55rem] font-extrabold text-gray-900 tracking-tight">Airbnb</span>
+            <span className="text-[1.55rem] font-extrabold text-gray-900 tracking-tight">Stay</span>
             <span
               className="text-[2rem] font-extrabold italic text-[#ff4a26] leading-none"
               style={{ fontFamily: "'Caveat', 'Dancing Script', cursive" }}
             >
-              Clone
+              Haven
             </span>
           </div>
           <span className="text-[0.78rem] text-gray-400 leading-none">Modern stay discovery</span>

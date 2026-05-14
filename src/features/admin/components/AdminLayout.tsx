@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
+import { AiChatWidget } from '../../../shared/components/AiChatWidget'
 import { useState, useRef, useEffect } from 'react'
 import {
   HiOutlineSquares2X2,
@@ -63,7 +64,7 @@ export function AdminLayout() {
     <div className="min-h-screen bg-[#fcfcfc] flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -130,7 +131,7 @@ export function AdminLayout() {
           <div>
             {!isCollapsed && <h3 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Account</h3>}
             <div className="space-y-1">
-              <NavLink to="/profile" className={navLinkClass}>
+              <NavLink to="/admin/profile" className={navLinkClass}>
                 <HiOutlineUser className="text-xl shrink-0" />
                 {!isCollapsed && <span>My Profile</span>}
               </NavLink>
@@ -155,7 +156,7 @@ export function AdminLayout() {
         {/* Topbar */}
         <header className="h-[88px] bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20 sticky top-0 transition-all duration-300">
           <div className="flex items-center gap-4 flex-1">
-            <button 
+            <button
               onClick={handleToggleSidebar}
               className="w-10 h-10 rounded-full bg-[#ff4a26] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#ff4a26]/20 cursor-pointer"
             >
@@ -182,7 +183,7 @@ export function AdminLayout() {
           {/* Right Actions */}
           <div className="flex items-center gap-3 shrink-0 relative" ref={menuRef}>
             {/* User Profile */}
-            <div 
+            <div
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex items-center gap-3 pl-2 border-l border-gray-100 ml-2 cursor-pointer hover:opacity-80 transition-opacity"
             >
@@ -202,7 +203,7 @@ export function AdminLayout() {
                   <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
                   <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                 </div>
-                
+
                 <Link to="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#ff4a26] transition-colors">
                   <HiOutlineUser className="text-lg" />
                   My Profile
@@ -211,9 +212,9 @@ export function AdminLayout() {
                   <HiOutlineCog6Tooth className="text-lg" />
                   Account Settings
                 </Link>
-                
+
                 <div className="border-t border-gray-100 mt-2 pt-2">
-                  <button 
+                  <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
@@ -231,6 +232,7 @@ export function AdminLayout() {
           <Outlet />
         </main>
       </div>
+      <AiChatWidget />
     </div>
   )
 }

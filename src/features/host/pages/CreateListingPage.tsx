@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -12,6 +12,7 @@ import {
   HiOutlineChevronLeft,
   HiOutlinePhoto,
   HiXMark,
+  HiOutlineCloudArrowUp,
 } from 'react-icons/hi2'
 import { Loader2 } from 'lucide-react'
 import { useCreateListing } from '../hooks/useHostData'
@@ -20,8 +21,16 @@ import { Input } from '../../../shared/ui/input'
 import { Label } from '../../../shared/ui/label'
 import { Textarea } from '../../../shared/ui/textarea'
 import type { CreateListingData, ListingType } from '../types/host'
+import { Badge } from '@/shared/ui/badge'
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+type PhotoEntry = {
+  localId: string         // stable key
+  file: File
+  previewUrl: string
+  status: 'pending' | 'uploading' | 'done' | 'error'
+  cloudinaryId?: string
+  cloudinaryUrl?: string
+}
 
 const LISTING_TYPES: { value: ListingType; label: string; emoji: string; desc: string }[] = [
   { value: 'APARTMENT', label: 'Apartment', emoji: '🏢', desc: 'A unit in a multi-unit building' },
@@ -46,8 +55,6 @@ const STEPS = [
   { id: 6, title: 'Review & Publish', subtitle: 'Almost done!', icon: HiOutlineCheckCircle },
 ]
 
-// ── Step components ───────────────────────────────────────────────────────────
-
 function StepTypeSelect({
   value,
   onChange,
@@ -62,7 +69,7 @@ function StepTypeSelect({
           key={t.value}
           type="button"
           onClick={() => onChange(t.value)}
-          className={`flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all ${value === t.value
+          className={`cursor-pointer flex items-start gap-4 p-5 rounded-2xl border-2 text-left transition-all ${value === t.value
             ? 'border-[#ff4a26] bg-[#ff4a26]/5 shadow-sm'
             : 'border-gray-200 hover:border-gray-300 bg-white'
             }`}
@@ -171,17 +178,17 @@ function StepAmenities({
       <p className="text-sm text-gray-500 mb-4">Select all that apply. You can update these later.</p>
       <div className="flex flex-wrap gap-2">
         {AMENITY_OPTIONS.map((a) => (
-          <button
+          <Badge
             key={a}
-            type="button"
+            // variant={selected.includes(a) ? 'default' : 'outline'}
             onClick={() => toggle(a)}
-            className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${selected.includes(a)
+            className={`px-4 py-4 cursor-pointer rounded-full text-sm font-medium border transition-all ${selected.includes(a)
               ? 'bg-[#ff4a26] text-white border-[#ff4a26] shadow-sm'
               : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
               }`}
           >
             {a}
-          </button>
+          </Badge>
         ))}
       </div>
       <p className="text-xs text-gray-400 mt-3">{selected.length} selected</p>
@@ -237,43 +244,113 @@ function StepDescriptionPricing({
 
 function StepPhotos({
   photos,
-  setPhotos,
+  onAddPhotos,
+  onRemovePhoto,
 }: {
-  photos: File[]
-  setPhotos: React.Dispatch<React.SetStateAction<File[]>>
+  photos: PhotoEntry[]
+  onAddPhotos: (files: File[]) => void
+  onRemovePhoto: (localId: string) => void
 }) {
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length) {
-      setPhotos((prev) => [...prev, ...files])
-    }
-  }
-
-  const removePhoto = (index: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index))
-  }
+  const inputRef = useRef<HTMLInputElement>(null)
+  const uploading = photos.some(p => p.status === 'uploading')
+  const allDone = photos.length > 0 && photos.every(p => p.status === 'done')
+  const doneCount = photos.filter(p => p.status === 'done').length
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-4">
-        {photos.map((photo, index) => (
-          <div key={index} className="relative group rounded-xl overflow-hidden border border-gray-200">
-            <img src={URL.createObjectURL(photo)} alt="" className="w-24 h-24 object-cover" />
-            <button
-              type="button"
-              onClick={() => removePhoto(index)}
-              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-            >
-              <HiXMark className="w-4 h-4" />
-            </button>
+      <p className="text-sm text-gray-500">
+        Photos will be uploaded automatically when you publish.
+        {photos.length > 0 && (
+          <span className="ml-1 font-medium text-gray-700">
+            {uploading
+              ? `${doneCount}/${photos.length} uploading…`
+              : allDone
+                ? `${photos.length}/${photos.length} uploaded ✓`
+                : `${photos.length} photo${photos.length !== 1 ? 's' : ''} queued — uploads on publish`}
+          </span>
+        )}
+      </p>
+
+      <div className="flex flex-wrap gap-3">
+        {photos.map((photo) => (
+          <div
+            key={photo.localId}
+            className="relative group w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 shrink-0"
+          >
+            <img
+              src={photo.previewUrl}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+
+            {/* Pending badge */}
+            {photo.status === 'pending' && (
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-gray-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                Ready
+              </div>
+            )}
+
+            {/* Uploading overlay */}
+            {photo.status === 'uploading' && (
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1">
+                <Loader2 className="w-5 h-5 text-white animate-spin" />
+                <span className="text-[9px] text-white font-semibold">Uploading…</span>
+              </div>
+            )}
+
+            {/* Done badge */}
+            {photo.status === 'done' && (
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                ✓ Saved
+              </div>
+            )}
+
+            {/* Error badge */}
+            {photo.status === 'error' && (
+              <div className="absolute inset-0 bg-red-500/70 flex items-center justify-center">
+                <span className="text-[9px] text-white font-bold">Failed</span>
+              </div>
+            )}
+
+            {/* Remove — only when not actively uploading */}
+            {photo.status !== 'uploading' && (
+              <button
+                type="button"
+                onClick={() => onRemovePhoto(photo.localId)}
+                className="absolute top-1 right-1 p-0.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                <HiXMark className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         ))}
-        <label className="w-24 h-24 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 hover:border-[#ff4a26] hover:bg-[#ff4a26]/5 cursor-pointer transition-colors">
-          <HiOutlinePhoto className="w-6 h-6 text-gray-400 mb-1" />
+
+        {/* Add more button */}
+        <label className="w-24 h-24 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 hover:border-[#ff4a26] hover:bg-[#ff4a26]/5 cursor-pointer transition-colors shrink-0">
+          <HiOutlineCloudArrowUp className="w-6 h-6 text-gray-400 mb-1" />
           <span className="text-[10px] text-gray-500 font-medium">Add Photos</span>
-          <input type="file" multiple className="hidden" accept="image/*" onChange={handlePhotoSelect} />
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            accept="image/*"
+            onChange={e => {
+              const files = Array.from(e.target.files || [])
+              if (files.length) onAddPhotos(files)
+              e.target.value = ''
+            }}
+          />
         </label>
       </div>
+
+      {photos.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
+          <HiOutlinePhoto className="w-10 h-10 text-gray-300 mb-2" />
+          <p className="text-sm font-medium text-gray-400">No photos added yet</p>
+          <p className="text-xs text-gray-300 mt-0.5">Click &quot;Add Photos&quot; above to get started</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -332,30 +409,64 @@ function StepReview({ data, photosCount }: { data: Partial<CreateListingData>; p
   )
 }
 
-// ── Main Wizard ───────────────────────────────────────────────────────────────
-
 export function CreateListingPage() {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedType, setSelectedType] = useState<ListingType | ''>('')
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
-  const [selectedPhotos, setSelectedPhotos] = useState<File[]>([])
-  const [isUploading, setIsUploading] = useState(false)
+  const [photoEntries, setPhotoEntries] = useState<PhotoEntry[]>([])
 
   const { register, handleSubmit, getValues, formState: { errors } } = useForm<CreateListingData>()
   const createMutation = useCreateListing()
 
+  const hasUploadingPhotos = photoEntries.some(p => p.status === 'uploading')
   const canProceedStep1 = selectedType !== ''
   const canProceedStep3 = selectedAmenities.length > 0
 
   const goNext = () => setCurrentStep(s => Math.min(s + 1, STEPS.length))
   const goPrev = () => setCurrentStep(s => Math.max(s - 1, 1))
 
-  const onSubmit = (formData: CreateListingData) => {
-    if (currentStep < STEPS.length) {
-      goNext()
-      return
+  const uploadPhotoNow = async (entry: PhotoEntry, listingId: string) => {
+    const token = localStorage.getItem('token')
+    const fd = new FormData()
+    fd.append('photos', entry.file)
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/listings/${listingId}/photos`,
+        { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd }
+      )
+      if (!res.ok) throw new Error('Upload failed')
+      const data = await res.json() as { photos: { id: string; url: string }[] }
+      const saved = data.photos?.[data.photos.length - 1]
+      setPhotoEntries(prev =>
+        prev.map(p =>
+          p.localId === entry.localId
+            ? { ...p, status: 'done', cloudinaryId: saved?.id, cloudinaryUrl: saved?.url }
+            : p
+        )
+      )
+    } catch {
+      setPhotoEntries(prev =>
+        prev.map(p => p.localId === entry.localId ? { ...p, status: 'error' } : p)
+      )
     }
+  }
+
+  const handleAddPhotos = (files: File[]) => {
+    const newEntries: PhotoEntry[] = files.map(file => ({
+      localId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+      status: 'pending' as const,
+    }))
+    setPhotoEntries(prev => [...prev, ...newEntries])
+  }
+
+  const handleRemovePhoto = (localId: string) => {
+    setPhotoEntries(prev => prev.filter(p => p.localId !== localId))
+  }
+
+  const onSubmit = (formData: CreateListingData) => {
     if (!selectedType) return
     const payload: CreateListingData = {
       ...formData,
@@ -364,25 +475,13 @@ export function CreateListingPage() {
     }
     createMutation.mutate(payload, {
       onSuccess: async (createdListing) => {
-        if (selectedPhotos.length > 0) {
-          setIsUploading(true)
-          try {
-            const token = localStorage.getItem('token')
-            for (const file of selectedPhotos) {
-              const fd = new FormData()
-              fd.append('photos', file)
-              await fetch(`${import.meta.env.VITE_API_URL}/api/v1/listings/${createdListing.id}/photos`, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${token}` },
-                body: fd,
-              })
-            }
-          } catch (e) {
-            toast.error('Listing created, but failed to upload some photos')
-          }
-          setIsUploading(false)
+        const pendingPhotos = photoEntries
+        if (pendingPhotos.length > 0) {
+          setPhotoEntries(prev =>
+            prev.map(p => p.status === 'pending' ? { ...p, status: 'uploading' } : p)
+          )
+          await Promise.all(pendingPhotos.map(entry => uploadPhotoNow(entry, createdListing.id)))
         }
-
         toast.success('Listing created successfully! 🎉')
         navigate('/dashboard/my-listings')
       },
@@ -432,14 +531,14 @@ export function CreateListingPage() {
       {/* ── Progress Bar ── */}
       <div className="h-1.5 bg-gray-100 rounded-full mb-8 overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#ff4a26] to-[#ff7e67] rounded-full transition-all duration-500"
+          className="h-full bg-linear-to-r from-[#ff4a26] to-[#ff7e67] rounded-full transition-all duration-500"
           style={{ width: `${progressPct}%` }}
         />
       </div>
 
       {/* ── Step Card ── */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+        <div className="px-6 py-5 border-b border-gray-100 bg-linear-to-r from-gray-50 to-white">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#ff4a26]/10 text-[#ff4a26] flex items-center justify-center">
               <StepIcon className="text-xl" />
@@ -467,7 +566,11 @@ export function CreateListingPage() {
               <StepDescriptionPricing register={register} errors={errors as Record<string, { message?: string }>} />
             )}
             {currentStep === 5 && (
-              <StepPhotos photos={selectedPhotos} setPhotos={setSelectedPhotos} />
+              <StepPhotos
+                photos={photoEntries}
+                onAddPhotos={handleAddPhotos}
+                onRemovePhoto={handleRemovePhoto}
+              />
             )}
             {currentStep === 6 && (
               <StepReview
@@ -476,7 +579,7 @@ export function CreateListingPage() {
                   type: selectedType as ListingType,
                   amenities: selectedAmenities,
                 }}
-                photosCount={selectedPhotos.length}
+                photosCount={photoEntries.length}
               />
             )}
           </div>
@@ -486,7 +589,7 @@ export function CreateListingPage() {
             <Button
               type="button"
               variant="outline"
-              className="rounded-full"
+              className="rounded-full cursor-pointer"
               onClick={goPrev}
               disabled={currentStep === 1}
             >
@@ -497,7 +600,13 @@ export function CreateListingPage() {
               <Button
                 type="button"
                 className="rounded-full bg-[#ff4a26] hover:bg-[#e03e20] text-white shadow-md shadow-[#ff4a26]/20"
-                onClick={goNext}
+                onClick={() => {
+                  if (currentStep === 2 || currentStep === 4) {
+                    handleSubmit(() => goNext())()
+                  } else {
+                    goNext()
+                  }
+                }}
                 disabled={
                   (currentStep === 1 && !canProceedStep1) ||
                   (currentStep === 3 && !canProceedStep3)
@@ -509,10 +618,11 @@ export function CreateListingPage() {
               <Button
                 type="submit"
                 className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-md flex items-center gap-2"
-                disabled={createMutation.isPending || isUploading}
+                disabled={createMutation.isPending || hasUploadingPhotos}
+                title={hasUploadingPhotos ? 'Wait for all photos to finish uploading' : undefined}
               >
-                {(createMutation.isPending || isUploading) && <Loader2 className="w-4 h-4 animate-spin" />}
-                {isUploading ? 'Uploading Photos...' : createMutation.isPending ? 'Publishing…' : '🚀 Publish Listing'}
+                {(createMutation.isPending || hasUploadingPhotos) && <Loader2 className="w-4 h-4 animate-spin" />}
+                {hasUploadingPhotos ? 'Uploading Photos…' : createMutation.isPending ? 'Publishing…' : '🚀 Publish Listing'}
               </Button>
             )}
           </div>

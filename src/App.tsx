@@ -15,6 +15,8 @@ import { Spinner } from './shared/components/Spinner'
 import { HostLayout } from './features/host/components/HostLayout'
 import { AdminLayout } from './features/admin/components/AdminLayout'
 import { Toaster } from './shared/ui/sonner'
+import { AdminProfilePage } from './features/admin/pages/AdminProfilePage'
+import { HostProfilePage } from './features/host/pages/HostProfilePage'
 
 const ListingDetail = lazy(() =>
   import('./features/guest/listings/pages/ListingDetail').then((module) => ({
@@ -176,6 +178,14 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/dashboard/profile"
+              element={
+                <ProtectedRoute requiredRole="HOST">
+                  <HostProfilePage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           {/* Admin Dashboard Routes */}
@@ -225,6 +235,14 @@ export function App() {
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <AdminAnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/profile"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminProfilePage />
                 </ProtectedRoute>
               }
             />
