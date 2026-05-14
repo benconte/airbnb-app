@@ -1,16 +1,30 @@
 import { useState } from 'react'
-import type { Listing } from '../types'
 
 interface Props {
-  images: Listing['images']
+  images: string[];
   title: string
 }
 
 export function PhotoGallery({ images, title }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
-  const main = images[0]
-  const side = images.slice(1, 3)
+  console.log(images)
+
+  const defaultImages = [
+    'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
+    'https://lobby-benconte.vercel.app/_next/image?url=https%3A%2F%2Fs3-media0.fl.yelpcdn.com%2Fbphoto%2FSTkuNT61iRgrlCExHkyKXg%2Fo.jpg&w=640&q=75',
+    'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=400&h=260&fit=crop'
+  ]
+
+  const photos = [
+    images[0] || defaultImages[0],
+    images[1] || defaultImages[1],
+    images[2] || defaultImages[2],
+    ...images.slice(3)
+  ]
+
+  const main = photos[0]
+  const side = photos.slice(1, 3)
 
   return (
     <>
@@ -62,13 +76,13 @@ export function PhotoGallery({ images, title }: Props) {
             ✕
           </button>
           <img
-            src={images[lightboxIndex]}
+            src={photos[lightboxIndex]}
             alt={title}
             className="max-w-[90vw] max-h-[82vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />
           <div className="flex gap-2">
-            {images.map((_, i) => (
+            {photos.map((_, i) => (
               <button
                 key={i}
                 className={`w-2 h-2 rounded-full border-0 cursor-pointer transition-colors ${i === lightboxIndex ? 'bg-white' : 'bg-white/40'

@@ -37,9 +37,9 @@ function ListingCardComponent({ listing, saved, onToggleSave }: ListingCardProps
       )}
     >
       {/* Image column */}
-      <div className="relative">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
         <img
-          className="w-full min-h-[170px] rounded-xl object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
           src={imageUrl}
           alt={listing.title}
         />

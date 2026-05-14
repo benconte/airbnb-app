@@ -116,7 +116,7 @@ export function TopNavbar({ savedCount }: TopNavbarProps) {
         {/* Host: Add Listing CTA */}
         {isAuthenticated && isHost && (
           <Link
-            to="/add-listing"
+            to="/dashboard/create-listing"
             className="inline-flex items-center gap-2 bg-[#ff4a26] hover:bg-[#e03d1e] text-white text-[0.88rem] font-semibold px-4 py-2 rounded-full transition-colors duration-200 no-underline cursor-pointer"
           >
             <span className="flex items-center justify-center w-4 h-4 rounded-full border border-white/70 text-[0.6rem]">
@@ -129,6 +129,12 @@ export function TopNavbar({ savedCount }: TopNavbarProps) {
         {/* Unauthenticated: Login / Sign up */}
         {!isAuthenticated && (
           <div className="flex items-center gap-2">
+            <Link
+              to="/register?role=HOST"
+              className="hidden sm:block text-sm font-medium text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full transition-colors no-underline"
+            >
+              Become a host
+            </Link>
             <Link
               to="/login"
               className="text-sm font-medium text-gray-700 hover:text-[#ff4a26] transition-colors no-underline"

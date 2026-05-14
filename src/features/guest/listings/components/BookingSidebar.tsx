@@ -58,7 +58,9 @@ export function BookingSidebar({ listingId, price, available, availableFrom }: P
       return res
     },
     onSuccess: () => {
-      toast.success('Booking confirmed!')
+      toast.success('Booking request received!', {
+        description: 'You will receive an email when approved.'
+      })
       queryClient.invalidateQueries({ queryKey: ['bookings', user?.id] })
       navigate('/trips')
     },
@@ -131,7 +133,7 @@ export function BookingSidebar({ listingId, price, available, availableFrom }: P
             <button
               type="submit"
               disabled={isPending}
-              className={`w-full py-3.5 rounded-xl text-white text-[15px] font-bold transition-colors ${isPending ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#ff4a26] hover:bg-[#e03a18]'
+              className={`cursor-pointer w-full py-3.5 rounded-xl text-white text-[15px] font-bold transition-colors ${isPending ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#ff4a26] hover:bg-[#e03a18]'
                 }`}
             >
               {isPending ? 'Processing...' : 'Reserve'}

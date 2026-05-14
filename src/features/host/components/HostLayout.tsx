@@ -17,11 +17,12 @@ import {
   HiOutlineMagnifyingGlass,
 } from 'react-icons/hi2'
 import { useAuth } from '../../auth/hooks/useAuth'
+import { ChartBarIcon } from 'lucide-react'
 
 export function HostLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  
+
   const [menuOpen, setMenuOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false) // Mobile slide
   const [isCollapsed, setIsCollapsed] = useState(false) // Desktop shrink
@@ -66,7 +67,7 @@ export function HostLayout() {
     <div className="min-h-screen bg-[#fcfcfc] flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -106,18 +107,18 @@ export function HostLayout() {
                 <HiOutlineSquares2X2 className="text-xl shrink-0" />
                 {!isCollapsed && <span>Dashboard</span>}
               </NavLink>
-              <NavLink to="/add-listing" className={navLinkClass}>
+              <NavLink to="/dashboard/create-listing" className={navLinkClass}>
                 <HiOutlinePlusCircle className="text-xl shrink-0" />
                 {!isCollapsed && <span>Add listing</span>}
-              </NavLink>
-              <NavLink to="/dashboard/wallet" className={navLinkClass}>
-                <HiOutlineWallet className="text-xl shrink-0" />
-                {!isCollapsed && <span>Wallet</span>}
               </NavLink>
               <NavLink to="/dashboard/messages" className={navLinkClass}>
                 <HiOutlineChatBubbleLeftEllipsis className="text-xl shrink-0" />
                 {!isCollapsed && <span>Message</span>}
                 {!isCollapsed && <span className="ml-auto bg-[#10b981] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>}
+              </NavLink>
+              <NavLink to="/dashboard/analytics" className={navLinkClass}>
+                <ChartBarIcon className="text-xl shrink-0" />
+                {!isCollapsed && <span>Analytics</span>}
               </NavLink>
             </div>
           </div>
@@ -178,7 +179,7 @@ export function HostLayout() {
         {/* Topbar */}
         <header className="h-[88px] bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20 sticky top-0 transition-all duration-300">
           <div className="flex items-center gap-4 flex-1">
-            <button 
+            <button
               onClick={handleToggleSidebar}
               className="w-10 h-10 rounded-full bg-[#ff4a26] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#ff4a26]/20 cursor-pointer"
             >
@@ -209,7 +210,7 @@ export function HostLayout() {
           {/* Right Actions */}
           <div className="flex items-center gap-3 shrink-0 relative" ref={menuRef}>
             {/* User Profile */}
-            <div 
+            <div
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex items-center gap-3 pl-2 border-l border-gray-100 ml-2 cursor-pointer hover:opacity-80 transition-opacity"
             >
@@ -229,7 +230,7 @@ export function HostLayout() {
                   <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
                   <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                 </div>
-                
+
                 <Link to="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#ff4a26] transition-colors">
                   <HiOutlineUser className="text-lg" />
                   My Profile
@@ -238,9 +239,9 @@ export function HostLayout() {
                   <HiOutlineCog6Tooth className="text-lg" />
                   Account Settings
                 </Link>
-                
+
                 <div className="border-t border-gray-100 mt-2 pt-2">
-                  <button 
+                  <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >

@@ -26,6 +26,26 @@ const DashboardPage = lazy(() =>
     default: module.DashboardPage,
   })),
 )
+const MyListingsPage = lazy(() =>
+  import('./features/host/pages/MyListingsPage').then((module) => ({
+    default: module.MyListingsPage,
+  })),
+)
+const HostBookingsPage = lazy(() =>
+  import('./features/host/pages/HostBookingsPage').then((module) => ({
+    default: module.HostBookingsPage,
+  })),
+)
+const AnalyticsPage = lazy(() =>
+  import('./features/host/pages/AnalyticsPage').then((module) => ({
+    default: module.AnalyticsPage,
+  })),
+)
+const CreateListingPage = lazy(() =>
+  import('./features/host/pages/CreateListingPage').then((module) => ({
+    default: module.CreateListingPage,
+  })),
+)
 const WishlistPage = lazy(() =>
   import('./features/guest/wishlists/pages/WishlistPage').then((module) => ({
     default: module.WishlistPage,
@@ -34,6 +54,38 @@ const WishlistPage = lazy(() =>
 const BookingsPage = lazy(() =>
   import('./features/guest/pages/BookingsPage').then((module) => ({
     default: module.BookingsPage,
+  })),
+)
+
+// Admin pages
+const AdminDashboardPage = lazy(() =>
+  import('./features/admin/pages/AdminDashboardPage').then((module) => ({
+    default: module.AdminDashboardPage,
+  })),
+)
+const AdminUsersPage = lazy(() =>
+  import('./features/admin/pages/AdminUsersPage').then((module) => ({
+    default: module.AdminUsersPage,
+  })),
+)
+const AdminListingsPage = lazy(() =>
+  import('./features/admin/pages/AdminListingsPage').then((module) => ({
+    default: module.AdminListingsPage,
+  })),
+)
+const AdminBookingsPage = lazy(() =>
+  import('./features/admin/pages/AdminBookingsPage').then((module) => ({
+    default: module.AdminBookingsPage,
+  })),
+)
+const AdminDisputesPage = lazy(() =>
+  import('./features/admin/pages/AdminDisputesPage').then((module) => ({
+    default: module.AdminDisputesPage,
+  })),
+)
+const AdminAnalyticsPage = lazy(() =>
+  import('./features/admin/pages/AdminAnalyticsPage').then((module) => ({
+    default: module.AdminAnalyticsPage,
   })),
 )
 
@@ -92,6 +144,38 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/dashboard/my-listings"
+              element={
+                <ProtectedRoute requiredRole="HOST">
+                  <MyListingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/bookings"
+              element={
+                <ProtectedRoute requiredRole="HOST">
+                  <HostBookingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/analytics"
+              element={
+                <ProtectedRoute requiredRole="HOST">
+                  <AnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/create-listing"
+              element={
+                <ProtectedRoute requiredRole="HOST">
+                  <CreateListingPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           {/* Admin Dashboard Routes */}
@@ -100,10 +184,47 @@ export function App() {
               path="/admin"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
-                  {/* Placeholder — Phase 8 */}
-                  <div className="p-12 text-center text-gray-500 flex-1">
-                    <p className="text-2xl font-bold">Admin Portal</p>
-                  </div>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminUsersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/listings"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminListingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/bookings"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminBookingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/disputes"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminDisputesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminAnalyticsPage />
                 </ProtectedRoute>
               }
             />

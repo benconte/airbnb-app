@@ -1,5 +1,6 @@
 import { useHomeListings } from '../hooks/useHomeListings'
 import { SectionCarousel } from '../components/SectionCarousel'
+import { HomeSearchbar } from '../components/HomeSearchbar'
 
 export function HomePage() {
   const { sections, isLoading, error } = useHomeListings({ sections: 10, perSection: 20 })
@@ -7,6 +8,7 @@ export function HomePage() {
   if (isLoading) {
     return (
       <main className="max-w-[1280px] mx-auto px-6 py-8">
+        <HomeSearchbar />
         {[1, 2, 3].map((i) => (
           <section key={i} className="mb-12">
             {/* Section title skeleton */}
@@ -30,6 +32,7 @@ export function HomePage() {
   if (error) {
     return (
       <main className="max-w-[1280px] mx-auto px-6 py-8">
+        <HomeSearchbar />
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <p className="text-2xl font-semibold text-gray-700 mb-2">
             Couldn't load featured listings
@@ -45,6 +48,7 @@ export function HomePage() {
   if (sections.length === 0) {
     return (
       <main className="max-w-[1280px] mx-auto px-6 py-8">
+        <HomeSearchbar />
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <p className="text-2xl font-semibold text-gray-700 mb-2">No listings yet</p>
           <p className="text-gray-400 text-sm">Check back soon — new places are being added!</p>
@@ -55,6 +59,7 @@ export function HomePage() {
 
   return (
     <main className="max-w-[1280px] mx-auto px-6 py-8">
+      <HomeSearchbar />
       {sections.map((section, i) => (
         <SectionCarousel
           key={section.title}

@@ -55,7 +55,7 @@ export function BookingsPage() {
       </div>
 
       {bookings.length === 0 ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-24 bg-gray-50 rounded-3xl border border-dashed border-gray-200"
@@ -75,13 +75,13 @@ export function BookingsPage() {
           </Link>
         </motion.div>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {bookings.map((booking: any) => {
             const isPast = new Date(booking.checkOut) < new Date()
             const isCancelled = booking.status === 'CANCELLED'
-            
+
             return (
-              <motion.div 
+              <motion.div
                 key={booking.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -99,21 +99,21 @@ export function BookingsPage() {
                     {format(new Date(booking.checkIn), 'yyyy')}
                   </span>
                 </div>
-                
+
                 <div className="flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-bold text-gray-900 m-0">
                       {booking.listing?.title || 'Listing name unavailable'}
                     </h3>
-                    <Badge variant={isCancelled ? 'destructive' : isPast ? 'secondary' : 'default'}>
-                      {isCancelled ? 'Cancelled' : isPast ? 'Past' : 'Upcoming'}
+                    <Badge variant={isCancelled ? 'destructive' : isPast ? 'secondary' : booking.status === 'CONFIRMED' ? 'success' : 'warning'}>
+                      {isCancelled ? 'Cancelled' : isPast ? 'Past' : booking.status === 'CONFIRMED' ? 'Confirmed' : 'Pending'}
                     </Badge>
                   </div>
-                  
+
                   <p className="text-gray-500 text-sm mb-4">
                     {booking.listing?.location || 'Location unavailable'}
                   </p>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-auto p-4 bg-slate-50 rounded-xl border border-slate-100/50">
                     <div>
                       <p className="text-xs text-gray-400 font-medium uppercase mb-0.5">Check out</p>
@@ -129,7 +129,7 @@ export function BookingsPage() {
                     </div>
                     <div className="flex items-center justify-end">
                       {!isPast && !isCancelled && (
-                        <button 
+                        <button
                           onClick={() => {
                             if (window.confirm('Are you sure you want to cancel this booking?')) {
                               cancelBooking(booking.id)

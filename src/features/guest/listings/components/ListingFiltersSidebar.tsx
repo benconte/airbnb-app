@@ -40,7 +40,7 @@ export function ListingFiltersSidebar({
   const maxPct = ((maxPrice - 50) / (5000 - 50)) * 100
 
   return (
-    <aside className="sticky top-24 self-start max-h-[calc(100vh-116px)] overflow-y-auto pr-4 shadow-[5px_0_5px_-5px_rgba(164,164,164,0.378)]">
+    <aside className="sticky top-24 self-start max-h-[calc(100vh-116px)] overflow-y-auto pr-4 shadow-[5px_0_5px_-5px_rgba(164,164,164,0.378)] max-[960px]:relative max-[960px]:top-auto max-[960px]:max-h-none max-[960px]:overflow-visible max-[960px]:pr-0 max-[960px]:shadow-none max-[960px]:z-10 bg-[#f9f5f4] max-[960px]:bg-transparent">
 
       {/* Price filter */}
       <section className="border-b border-gray-200 pb-4 pt-3.5">

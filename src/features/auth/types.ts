@@ -13,6 +13,7 @@ export type RegisterData = {
   username: string
   password: string
   phone: string
+  role?: 'GUEST' | 'HOST'
 }
 
 export type AuthContextValue = {

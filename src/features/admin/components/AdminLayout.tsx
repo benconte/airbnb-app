@@ -6,6 +6,7 @@ import {
   HiOutlineShieldExclamation,
   HiOutlineChartBarSquare,
   HiOutlineBuildingStorefront,
+  HiOutlineCalendarDays,
   HiOutlineUser,
   HiOutlineCog6Tooth,
   HiArrowRightOnRectangle,
@@ -109,6 +110,10 @@ export function AdminLayout() {
               <NavLink to="/admin/listings" className={navLinkClass}>
                 <HiOutlineBuildingStorefront className="text-xl shrink-0" />
                 {!isCollapsed && <span>Listings</span>}
+              </NavLink>
+              <NavLink to="/admin/bookings" className={navLinkClass}>
+                <HiOutlineCalendarDays className="text-xl shrink-0" />
+                {!isCollapsed && <span>Bookings</span>}
               </NavLink>
               <NavLink to="/admin/disputes" className={navLinkClass}>
                 <HiOutlineShieldExclamation className="text-xl shrink-0" />

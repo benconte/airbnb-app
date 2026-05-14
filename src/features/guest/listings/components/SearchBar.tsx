@@ -1,51 +1,41 @@
 import debounce from 'lodash/debounce'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useRef, useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
-import { api } from '../../../../lib/api'
 import { useStore } from '../../../../store/useStore'
-import type { ListingsResponse } from '../types'
 
-/**
- * SearchBar
- * - Debounces the user's input (300 ms) via lodash.debounce
- * - On every debounced change it fires a server search against
- *   GET /api/v1/listings/search?location=<query>
- * - Falls back to the global store filter for backward-compat with the
- *   sidebar price/type filters (those still live in the store).
- */
 export function SearchBar() {
-  const {
-    state: { filter },
-    dispatch,
-  } = useStore()
-
-  const queryClient = useQueryClient()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') || ''
+  const { state: { loading, listings } } = useStore() // Get loading state just for UI spinner
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const [query, setQuery] = useState(filter ?? '')
-  const [debouncedQuery, setDebouncedQuery] = useState(filter ?? '')
+  const [query, setQuery] = useState(initialSearch)
   const [isFocused, setIsFocused] = useState(false)
 
+  // Sync input if URL changes externally (e.g., clicking clear all)
   useEffect(() => {
-    if (filter === '') {
-      setQuery('')
-      setDebouncedQuery('')
-    }
-  }, [filter])
+    setQuery(searchParams.get('search') || '')
+  }, [searchParams])
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
-  // Debounce: update debouncedQuery + sync with global store
   const commitSearch = useMemo(
     () =>
       debounce((value: string) => {
-        setDebouncedQuery(value)
-        dispatch({ type: 'SET_FILTER', payload: value })
+        setSearchParams(prev => {
+          const next = new URLSearchParams(prev)
+          if (value.trim()) {
+            next.set('search', value.trim())
+          } else {
+            next.delete('search')
+          }
+          return next
+        }, { replace: true })
       }, 300),
-    [dispatch],
+    [setSearchParams],
   )
 
   useEffect(() => {
@@ -53,29 +43,6 @@ export function SearchBar() {
       commitSearch.cancel()
     }
   }, [commitSearch])
-
-  // Query the API whenever the debounced value changes
-  const { data, isFetching } = useQuery<ListingsResponse>({
-    queryKey: ['listings', 'search', debouncedQuery],
-    queryFn: () =>
-      api.get<ListingsResponse>(
-        `/api/v1/listings/search?search=${encodeURIComponent(debouncedQuery)}&limit=50`,
-      ),
-    enabled: debouncedQuery.trim().length > 0,
-    staleTime: 30_000,
-  })
-
-  // Push search results into the global store so the listing grid re-renders
-  useEffect(() => {
-    if (debouncedQuery.trim() === '') {
-      const defaultListings = queryClient.getQueryData<ListingsResponse>(['listings'])
-      if (defaultListings?.data) {
-        dispatch({ type: 'SET_LISTINGS', payload: defaultListings.data })
-      }
-    } else if (data?.data) {
-      dispatch({ type: 'SET_LISTINGS', payload: data.data })
-    }
-  }, [debouncedQuery, data, dispatch, queryClient])
 
   return (
     <label className="grid gap-1.5 w-full">
@@ -86,7 +53,6 @@ export function SearchBar() {
           isFocused ? 'border-[#ff4a26] ring-2 ring-[#ff4a26]/20' : 'border-[#dbe3f0]',
         ].join(' ')}
       >
-        {/* Search icon */}
         <HiMagnifyingGlass
           className={[
             'absolute left-3 text-base transition-colors duration-200',
@@ -109,9 +75,8 @@ export function SearchBar() {
           className="w-full h-full bg-transparent pl-9 pr-10 text-[0.95rem] text-gray-800 placeholder:text-slate-400 outline-none rounded-xl"
         />
 
-        {/* Loading spinner or clear button */}
         <div className="absolute right-3 flex items-center">
-          {isFetching ? (
+          {loading ? (
             <span className="w-4 h-4 border-2 border-[#ff4a26]/30 border-t-[#ff4a26] rounded-full animate-spin" />
           ) : query.length > 0 ? (
             <button
