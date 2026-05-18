@@ -7,7 +7,6 @@ import {
   HiOutlineChatBubbleLeftEllipsis,
   HiOutlineDocumentText,
   HiOutlineCalendarDays,
-  HiOutlineBookmarkSquare,
   HiOutlineUser,
   HiOutlineCog6Tooth,
   HiOutlineQuestionMarkCircle,
