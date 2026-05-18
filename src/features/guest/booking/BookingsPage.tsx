@@ -213,17 +213,41 @@ export function BookingsPage() {
                   exit={{ opacity: 0, scale: 0.97 }}
                   className="flex flex-col md:flex-row gap-5 p-5 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
                 >
-                  {/* Visual date panel */}
-                  <div className="shrink-0 flex flex-col items-center justify-center w-full md:w-[130px] h-[130px] bg-linear-to-br from-[#fff4f2] to-white rounded-xl border border-[#ffd0c5]">
-                    <span className="text-xs font-semibold text-[#ff4a26] uppercase tracking-wide">
-                      {format(new Date(booking.checkIn), 'MMM')}
-                    </span>
-                    <span className="text-4xl font-extrabold text-gray-900 my-0.5">
-                      {format(new Date(booking.checkIn), 'dd')}
-                    </span>
-                    <span className="text-xs text-gray-500 font-medium">
-                      {format(new Date(booking.checkIn), 'yyyy')}
-                    </span>
+                  {/* Photo / date panel */}
+                  <div className="shrink-0 relative w-full md:w-[130px] h-[130px] rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+                    {booking.listing?.photos?.[0]?.url ? (
+                      <>
+                        <img
+                          src={booking.listing.photos[0].url}
+                          alt={booking.listing.title}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Date overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-2">
+                          <span className="text-[10px] font-semibold text-white/80 uppercase tracking-wide">
+                            {format(new Date(booking.checkIn), 'MMM')}
+                          </span>
+                          <span className="text-2xl font-extrabold text-white leading-none">
+                            {format(new Date(booking.checkIn), 'dd')}
+                          </span>
+                          <span className="text-[10px] text-white/70 font-medium">
+                            {format(new Date(booking.checkIn), 'yyyy')}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-br from-[#fff4f2] to-white">
+                        <span className="text-xs font-semibold text-[#ff4a26] uppercase tracking-wide">
+                          {format(new Date(booking.checkIn), 'MMM')}
+                        </span>
+                        <span className="text-4xl font-extrabold text-gray-900 my-0.5">
+                          {format(new Date(booking.checkIn), 'dd')}
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          {format(new Date(booking.checkIn), 'yyyy')}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 flex flex-col gap-3">

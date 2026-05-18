@@ -106,6 +106,7 @@ export function BookingSidebar({ listingId, price, available, availableFrom, max
         checkIn: new Date(data.checkIn).toISOString(),
         checkOut: new Date(data.checkOut).toISOString(),
         guests: data.guests,
+        room: selectedTier?.id || 'standard',
       })
       return res
     },

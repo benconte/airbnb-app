@@ -9,6 +9,7 @@ import type {
   PaginatedResponse,
   CreateDisputeData,
 } from '../types/admin'
+import type { Dispute } from '../../disputes/types'
 
 // ── Admin Stats ───────────────────────────────────────────────────────────────
 
@@ -149,5 +150,13 @@ export function useCreateDispute() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'disputes'] })
     },
+  })
+}
+
+export function useAdminDisputeDetail(id: string) {
+  return useQuery<Dispute>({
+    queryKey: ['admin', 'dispute-detail', id],
+    queryFn: () => api.get<Dispute>(`/api/v1/disputes/${id}`),
+    enabled: !!id,
   })
 }

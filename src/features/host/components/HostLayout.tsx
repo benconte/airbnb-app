@@ -139,10 +139,6 @@ export function HostLayout() {
                 <HiOutlineExclamationTriangle className="text-xl shrink-0" />
                 {!isCollapsed && <span>Disputes</span>}
               </NavLink>
-              <NavLink to="/dashboard/bookmarks" className={navLinkClass}>
-                <HiOutlineBookmarkSquare className="text-xl shrink-0" />
-                {!isCollapsed && <span>Bookmark</span>}
-              </NavLink>
             </div>
           </div>
 

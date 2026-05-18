@@ -233,7 +233,7 @@ export function AdminLayout() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-auto p-6 lg:p-8 bg-gradient-to-br from-[#fcfcfc] to-[#fff5f3]/30">
+        <main className="flex-1 overflow-auto p-6 lg:p-8 bg-linear-to-br from-[#fcfcfc] to-[#fff5f3]/30">
           <Outlet />
         </main>
       </div>

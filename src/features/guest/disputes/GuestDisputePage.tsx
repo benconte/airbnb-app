@@ -1,35 +1,27 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
-import { HiOutlineShieldExclamation, HiArrowLeft } from 'react-icons/hi2'
+import { HiArrowLeft, HiOutlineShieldExclamation } from 'react-icons/hi2'
 import { Skeleton } from '../../../shared/ui/skeleton'
 import { useMyDisputes, useEscalateDispute } from '../../disputes/useDisputeHooks'
-import { DisputeListItem, DisputeStatusStrip, EscalateBanner } from '../../disputes/DisputeComponents'
+import { DisputeListItem, DisputeStatusStrip, EscalateBanner, FileDisputeCTA } from '../../disputes/DisputeComponents'
 import { DisputeThread } from '../../disputes/DisputeThread'
-import type { Dispute } from '../../disputes/types'
+import type { Dispute, DisputeReason } from '../../disputes/types'
 import { REASON_LABELS } from '../../disputes/types'
 import { format } from 'date-fns'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
 // ── Dispute detail panel ───────────────────────────────────────────────────────
 
-function DisputeDetailPanel({ dispute, onBack }: { dispute: Dispute; onBack: () => void }) {
+function GuestDisputeDetailPanel({ dispute, onBack }: { dispute: Dispute; onBack: () => void }) {
   const { user } = useAuth()
   const escalate = useEscalateDispute()
   const canEscalate = dispute.status === 'OPEN' && dispute.reporterId === user?.id
 
-  function handleEscalate() {
-    escalate.mutate(dispute.id, {
-      onSuccess: () => toast.success('Dispute escalated to admin review.'),
-      onError: (e) => toast.error(e.message),
-    })
-  }
-
   return (
     <div className="space-y-5">
-      {/* Back button + title */}
       <div className="flex items-center gap-3">
-        <button onClick={onBack}
-          className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
+        <button onClick={onBack} className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <HiArrowLeft className="text-gray-600" />
         </button>
         <div>
@@ -38,12 +30,10 @@ function DisputeDetailPanel({ dispute, onBack }: { dispute: Dispute; onBack: () 
         </div>
       </div>
 
-      {/* Meta grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {[
           { label: 'Reason', value: REASON_LABELS[dispute.reason] },
-          { label: 'Against', value: dispute.againstRole === 'GUEST' ? 'Guest' : 'Host' },
-          { label: 'Guest', value: dispute.booking.guest.name },
+          { label: 'Against', value: dispute.againstRole === 'HOST' ? 'Host' : 'Guest' },
           { label: 'Filed', value: format(new Date(dispute.createdAt), 'MMM d, yyyy') },
         ].map(({ label, value }) => (
           <div key={label} className="bg-gray-50 rounded-xl px-3 py-2.5">
@@ -53,10 +43,16 @@ function DisputeDetailPanel({ dispute, onBack }: { dispute: Dispute; onBack: () 
         ))}
       </div>
 
-      {/* Escalate banner for open disputes */}
-      {canEscalate && <EscalateBanner onEscalate={handleEscalate} isLoading={escalate.isPending} />}
+      {canEscalate && (
+        <EscalateBanner
+          onEscalate={() => escalate.mutate(dispute.id, {
+            onSuccess: () => toast.success('Escalated to admin review.'),
+            onError: (e) => toast.error(e.message),
+          })}
+          isLoading={escalate.isPending}
+        />
+      )}
 
-      {/* Thread */}
       <DisputeThread dispute={dispute} currentUserId={user?.id ?? ''} />
     </div>
   )
@@ -64,27 +60,31 @@ function DisputeDetailPanel({ dispute, onBack }: { dispute: Dispute; onBack: () 
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
-export function HostDisputesPage() {
+export function GuestDisputesPage() {
   const [page] = useState(1)
   const [selected, setSelected] = useState<Dispute | null>(null)
+  const navigate = useNavigate()
   const { data, isLoading, isError } = useMyDisputes(page)
   const disputes = data?.data ?? []
 
   if (selected) {
     return (
-      <div className="max-w-3xl mx-auto w-full pb-10">
-        <DisputeDetailPanel dispute={selected} onBack={() => setSelected(null)} />
+      <div className="container max-w-3xl mx-auto w-full pb-10 px-4">
+        <GuestDisputeDetailPanel dispute={selected} onBack={() => setSelected(null)} />
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 max-w-[1200px] mx-auto w-full pb-10">
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-900">Disputes</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          {data?.meta ? `${data.meta.total} dispute${data.meta.total !== 1 ? 's' : ''}` : 'Dispute cases against guests'}
-        </p>
+    <div className="container space-y-6 max-w-[1200px] mx-auto w-full pb-10 px-8">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-extrabold text-gray-900">My Disputes</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {data?.meta ? `${data.meta.total} dispute${data.meta.total !== 1 ? 's' : ''}` : 'Disputes you have filed against hosts'}
+          </p>
+        </div>
+        <FileDisputeCTA onClick={() => navigate('/bookings')} />
       </div>
 
       {disputes.length > 0 && <DisputeStatusStrip disputes={disputes} />}
@@ -105,7 +105,7 @@ export function HostDisputesPage() {
         <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
           <HiOutlineShieldExclamation className="text-5xl mx-auto mb-3 text-gray-300" />
           <p className="font-semibold text-gray-500">No disputes filed yet</p>
-          <p className="text-sm text-gray-400 mt-1">File a dispute from the Bookings page against a guest.</p>
+          <p className="text-sm text-gray-400 mt-1">File a dispute from your Bookings page.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

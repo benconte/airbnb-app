@@ -32,7 +32,7 @@ export function TopNavbar({ savedCount }: TopNavbarProps) {
 
   const role = user?.role?.toUpperCase()
   const isHost = role === 'HOST'
-  const isAdmin = role === 'ADMIN'
+  const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN'
   const isGuest = role === 'GUEST' || (!isHost && !isAdmin)
 
   // Close dropdown when clicking outside
@@ -90,6 +90,9 @@ export function TopNavbar({ savedCount }: TopNavbarProps) {
             </NavLink>
             <NavLink to="/trips" className={navLinkClass}>
               Trips
+            </NavLink>
+            <NavLink to="/disputes" className={navLinkClass}>
+              Disputes
             </NavLink>
           </>
         )}

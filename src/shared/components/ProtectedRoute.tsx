@@ -4,22 +4,39 @@ import { useEffect, type PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
 type ProtectedRouteProps = PropsWithChildren<{
-  /** If provided, only users with this role (case-insensitive) can access the route */
-  requiredRole?: string
+  /** Allowed roles for this route */
+  requiredRole?: string[]
 }>
 
-export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+export function ProtectedRoute({
+  children,
+  requiredRole,
+}: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuth()
+
+  const userRole = user?.role?.toUpperCase()
 
   const hasAccess =
     isAuthenticated &&
-    (!requiredRole || user?.role?.toUpperCase() === requiredRole.toUpperCase())
+    (!requiredRole ||
+      requiredRole.some(
+        (role) => role.toUpperCase() === userRole,
+      ))
 
   useEffect(() => {
     if (!isAuthenticated) {
       toast.error('Please log in to access this page')
-    } else if (requiredRole && !hasAccess) {
-      toast.error(`This page is restricted to ${requiredRole.toLowerCase()}s`)
+      return
+    }
+
+    if (requiredRole && !hasAccess) {
+      const formattedRoles = requiredRole
+        .map((role) => role.toLowerCase())
+        .join(' or ')
+
+      toast.error(
+        `This page is restricted to ${formattedRoles} users`,
+      )
     }
   }, [isAuthenticated, hasAccess, requiredRole])
 

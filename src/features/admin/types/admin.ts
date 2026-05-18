@@ -1,6 +1,6 @@
 // ── Admin Types ────────────────────────────────────────────────────────────────
 
-export type AdminRole = 'ADMIN' | 'HOST' | 'GUEST'
+export type AdminRole = 'ADMIN' | 'SUPER_ADMIN' | 'HOST' | 'GUEST'
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED'
 export type DisputeStatus = 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED' | 'DISMISSED'
 export type DisputeReason =
@@ -23,6 +23,7 @@ export interface AdminUser {
   bio: string | null
   createdAt: string
   updatedAt: string
+  isBlocked: boolean
   _count?: { listings: number }
 }
 

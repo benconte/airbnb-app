@@ -18,6 +18,14 @@ import { Toaster } from './shared/ui/sonner'
 import { AdminProfilePage } from './features/admin/pages/AdminProfilePage'
 import { HostProfilePage } from './features/host/pages/HostProfilePage'
 
+
+const ROLES = {
+  ADMIN: 'ADMIN',
+  HOST: 'HOST',
+  GUEST: 'GUEST',
+  SUPER_ADMIN: 'SUPER_ADMIN',
+}
+
 const ListingDetail = lazy(() =>
   import('./features/guest/listings/pages/ListingDetail').then((module) => ({
     default: module.ListingDetail,
@@ -58,6 +66,11 @@ const WishlistPage = lazy(() =>
     default: module.WishlistPage,
   })),
 )
+const GuestDisputePage = lazy(() =>
+  import('./features/guest/disputes/GuestDisputePage').then((module) => ({
+    default: module.GuestDisputesPage,
+  })),
+);
 const BookingsPage = lazy(() =>
   import('./features/guest/booking/BookingsPage').then((module) => ({
     default: module.BookingsPage,
@@ -137,6 +150,14 @@ export function App() {
               }
             />
             <Route
+              path="/disputes"
+              element={
+                <ProtectedRoute>
+                  <GuestDisputePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/trips"
               element={
                 <ProtectedRoute>
@@ -151,7 +172,7 @@ export function App() {
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <DashboardPage />
                 </ProtectedRoute>
               }
@@ -159,7 +180,7 @@ export function App() {
             <Route
               path="/dashboard/my-listings"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <MyListingsPage />
                 </ProtectedRoute>
               }
@@ -167,7 +188,7 @@ export function App() {
             <Route
               path="/dashboard/bookings"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <HostBookingsPage />
                 </ProtectedRoute>
               }
@@ -175,7 +196,7 @@ export function App() {
             <Route
               path="/dashboard/analytics"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <AnalyticsPage />
                 </ProtectedRoute>
               }
@@ -183,7 +204,7 @@ export function App() {
             <Route
               path="/dashboard/create-listing"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <CreateListingPage />
                 </ProtectedRoute>
               }
@@ -191,7 +212,7 @@ export function App() {
             <Route
               path="/dashboard/disputes"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <HostDisputesPage />
                 </ProtectedRoute>
               }
@@ -199,7 +220,7 @@ export function App() {
             <Route
               path="/dashboard/profile"
               element={
-                <ProtectedRoute requiredRole="HOST">
+                <ProtectedRoute requiredRole={[ROLES.HOST]}>
                   <HostProfilePage />
                 </ProtectedRoute>
               }
@@ -211,7 +232,7 @@ export function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminDashboardPage />
                 </ProtectedRoute>
               }
@@ -219,7 +240,7 @@ export function App() {
             <Route
               path="/admin/users"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminUsersPage />
                 </ProtectedRoute>
               }
@@ -227,7 +248,7 @@ export function App() {
             <Route
               path="/admin/listings"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminListingsPage />
                 </ProtectedRoute>
               }
@@ -235,7 +256,7 @@ export function App() {
             <Route
               path="/admin/listings-review"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminReviewListingsPage />
                 </ProtectedRoute>
               }
@@ -243,7 +264,7 @@ export function App() {
             <Route
               path="/admin/bookings"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminBookingsPage />
                 </ProtectedRoute>
               }
@@ -251,7 +272,7 @@ export function App() {
             <Route
               path="/admin/disputes"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminDisputesPage />
                 </ProtectedRoute>
               }
@@ -259,7 +280,7 @@ export function App() {
             <Route
               path="/admin/analytics"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminAnalyticsPage />
                 </ProtectedRoute>
               }
@@ -267,7 +288,7 @@ export function App() {
             <Route
               path="/admin/profile"
               element={
-                <ProtectedRoute requiredRole="ADMIN">
+                <ProtectedRoute requiredRole={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
                   <AdminProfilePage />
                 </ProtectedRoute>
               }

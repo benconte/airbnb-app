@@ -10,7 +10,8 @@ import {
   HiChevronRight,
   HiOutlineFunnel,
 } from 'react-icons/hi2'
-import { useAdminUsers, useDeleteUser } from '../hooks/useAdminData'
+import { useAdminUsers, useDeleteUser, useUpdateUser } from '../hooks/useAdminData'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { Button } from '@/shared/ui/button'
 import {
@@ -30,15 +31,17 @@ import {
 } from '@/shared/ui/dialog'
 import type { AdminUser, AdminRole } from '../types/admin'
 
-const ROLES: AdminRole[] = ['ADMIN', 'HOST', 'GUEST']
+const ROLES: AdminRole[] = ['SUPER_ADMIN', 'ADMIN', 'HOST', 'GUEST']
 
 function roleBadge(role: AdminRole) {
   const styles = {
+    SUPER_ADMIN: 'bg-purple-100 text-purple-700 border-purple-200',
     ADMIN: 'bg-[#ff4a26]/10 text-[#ff4a26] border-[#ff4a26]/20',
     HOST: 'bg-indigo-50 text-indigo-600 border-indigo-200',
     GUEST: 'bg-gray-50 text-gray-500 border-gray-200',
   }
   const icons = {
+    SUPER_ADMIN: HiOutlineShieldCheck,
     ADMIN: HiOutlineShieldCheck,
     HOST: HiOutlineHome,
     GUEST: HiOutlineUsers,
@@ -51,13 +54,44 @@ function fmtDate(d: string) {
 }
 
 export function AdminUsersPage() {
+  const { user } = useAuth()
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN'
+
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState<AdminRole | ''>('')
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null)
 
+  const [editTarget, setEditTarget] = useState<AdminUser | null>(null)
+  const [editRole, setEditRole] = useState<AdminRole>('GUEST')
+  const [editBlocked, setEditBlocked] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editPhone, setEditPhone] = useState('')
+  const [editBio, setEditBio] = useState('')
+
   const { data, isLoading } = useAdminUsers(page, 10, roleFilter || undefined)
   const deleteMutation = useDeleteUser()
+  const updateMutation = useUpdateUser()
+
+  const handleEdit = (u: AdminUser) => {
+    setEditTarget(u)
+    setEditRole(u.role)
+    setEditBlocked(u.isBlocked)
+    setEditName(u.name)
+    setEditPhone(u.phone ?? '')
+    setEditBio(u.bio ?? '')
+  }
+
+  const handleSaveEdit = () => {
+    if (!editTarget) return
+    updateMutation.mutate({ id: editTarget.id, data: { role: editRole, isBlocked: editBlocked, name: editName, phone: editPhone, bio: editBio } }, {
+      onSuccess: () => {
+        toast.success(`User updated.`)
+        setEditTarget(null)
+      },
+      onError: (err) => toast.error(err.message),
+    })
+  }
 
   const filtered = data?.data.filter(u =>
     search === '' ||
@@ -198,11 +232,17 @@ export function AdminUsersPage() {
                           </TableCell>
                           <TableCell className="text-sm text-gray-600">{u._count?.listings ?? 0}</TableCell>
                           <TableCell className="text-sm text-gray-400">{fmtDate(u.createdAt)}</TableCell>
-                          <TableCell className="pr-6 text-right">
+                          <TableCell className="pr-6 text-right space-x-2 whitespace-nowrap">
+                            <button
+                              onClick={() => handleEdit(u)}
+                              className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg text-xs font-semibold transition-colors"
+                            >
+                              Edit
+                            </button>
                             <button
                               onClick={() => setDeleteTarget(u)}
-                              disabled={u.role === 'ADMIN'}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg text-xs font-semibold transition-colors"
+                              disabled={u.role === 'SUPER_ADMIN' || (!isSuperAdmin && u.role === 'ADMIN')}
+                              className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg text-xs font-semibold transition-colors"
                             >
                               <HiOutlineTrash className="text-sm" /> Delete
                             </button>
@@ -274,6 +314,75 @@ export function AdminUsersPage() {
               className="bg-red-500 hover:bg-red-600 text-white rounded-xl"
             >
               {deleteMutation.isPending ? 'Deleting…' : 'Delete User'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!editTarget} onOpenChange={() => setEditTarget(null)}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-gray-900">Edit User</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">Name</label>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4a26]"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">Phone</label>
+              <input
+                type="text"
+                value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4a26]"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">Bio</label>
+              <textarea
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
+                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4a26] min-h-[80px]"
+              />
+            </div>
+            {isSuperAdmin && (
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold">Role</label>
+                <select
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value as AdminRole)}
+                  className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff4a26]"
+                >
+                  {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+            )}
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="isBlocked"
+                checked={editBlocked}
+                onChange={(e) => setEditBlocked(e.target.checked)}
+                className="w-4 h-4 text-[#ff4a26] focus:ring-[#ff4a26] border-gray-300 rounded"
+              />
+              <label htmlFor="isBlocked" className="text-sm font-semibold text-gray-700">Account Blocked</label>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 mt-4">
+            <Button variant="outline" onClick={() => setEditTarget(null)} className="rounded-xl">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveEdit}
+              disabled={updateMutation.isPending}
+              className="bg-[#ff4a26] hover:bg-[#e03a18] text-white rounded-xl"
+            >
+              {updateMutation.isPending ? 'Saving…' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </DialogContent>
